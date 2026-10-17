@@ -10,9 +10,8 @@ Personalized degree, habit tracking, GANO calculation, and semster course select
 Choose your academic year, select the classes you take and select your school. Play minigames and enjoy your learning studies.
 
 
-### For y'all: Let's be more Social:
-
-#### The app provides synchronized studying enviroment of  2.5D physical study office where you can invite your friends study together, play minigames, and having fun!
+### For y'all: Let's be more Social
+The app provides synchronized studying enviroment of  2.5D physical study office where you can invite your friends study together, play minigames, and having fun!
 ---
 
 ## Architecture & Technology Stack
