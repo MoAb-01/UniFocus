@@ -1,12 +1,23 @@
-# UniFocus — Academic Productivity & Multiplayer Study Arena
+# UniFocus — Academic Productivity and Social App
 
-UniFocus is an academic productivity, course organization, and multiplayer focus application engineered for university students in Türkiye. It combines personalized degree and GANO tracking with a real-time, synchronized 2.5D physical study office powered by Firebase and LiveKit.
+UniFocus is an academic productivity, course organization, and multiplayer focus application engineered for students from different academic backgrounds. It combines the necessary tools for school or university students.
 
+### For University Students: You get it all settled!
+Personalized degree, habit tracking, GANO calculation, and semster course selection. Above all that, the app analyzes the courses and sesmters you take based on your needs.
+
+
+### For School Students
+Choose your academic year, select the classes you take and select your school. Play minigames and enjoy your learning studies.
+
+
+### For y'all: Let's be more Social:
+
+The app provides synchronized studying enviroment of  2.5D physical study office where you can invite your friends study together, play minigames, and having fun!
 ---
 
 ## Architecture & Technology Stack
 
-- **Framework**: Flutter / Dart
+- **Framework**: Dart
 - **Backend Source of Truth**: Google Firebase
   - **Firebase Authentication**: Dual-Token architecture with short-lived memory access tokens, secure refresh tokens, sliding inactivity limits, and silent renewal on 401 Unauthorized.
   - **Cloud Firestore**: Realtime collections for `users/{uid}`, `users/{uid}/semesters/{semId}/courses/{courseId}`, `users/{uid}/tasks/{taskId}`, `users/{uid}/xpTransactions/{txId}`, and `rooms/{roomId}` with subcollection `rooms/{roomId}/members/{uid}`.
@@ -17,7 +28,7 @@ UniFocus is an academic productivity, course organization, and multiplayer focus
 
 ---
 
-## Academic Baseline & Course Model
+## Academic Baseline Model (For University Students)
 
 ### Academic Baseline vs Entered Courses
 UniFocus avoids forcing students to enter four years of historical courses manually. Onboarding captures the student's existing baseline:
@@ -32,7 +43,7 @@ $$\text{Cumulative GANO} = \frac{(\text{previousGpa} \times \text{previousComple
 
 If `previousGpa` is unset and no graded courses exist, the application displays **`GPA NOT SET`** with no fabricated changes.
 
-### Multi-Program Support (ÇAP & Yandal)
+### Multi-Program Support (Double & Minor)
 UniFocus provides full first-class support for students with secondary programs:
 - Single Major (`NONE`)
 - Double Major (`CAP`)
