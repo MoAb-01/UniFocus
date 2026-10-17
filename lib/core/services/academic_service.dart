@@ -9,9 +9,12 @@ import '../models/study_session.dart';
 import '../models/scanned_document.dart';
 import '../utils/grade_calculator.dart';
 import 'storage_service.dart';
+import 'firestore_user_service.dart';
+import 'gamification_service.dart';
 
 class AcademicService extends ChangeNotifier {
   final StorageService _storage;
+  final FirestoreUserService _firestoreUserService;
 
   late UserProfile _profile;
   List<Program> _programs = [];
@@ -22,24 +25,146 @@ class AcademicService extends ChangeNotifier {
   List<ScannedDocument> _documents = [];
   String? _selectedProgramId; // null = all programs
 
-  AcademicService(this._storage) {
+  AcademicService(
+    this._storage, {
+    FirestoreUserService? firestoreUserService,
+  }) : _firestoreUserService = firestoreUserService ?? FirestoreUserService() {
     loadData();
   }
 
   void loadData() {
     _profile = _storage.getProfile();
-    _programs = _storage.getPrograms();
-    _semesters = _storage.getSemesters();
-    _tasks = _storage.getTasks();
-    _events = _storage.getEvents();
-    _sessions = _storage.getSessions();
-    _documents = _storage.getDocuments();
+    _programs = List<Program>.from(_storage.getPrograms());
+    _semesters = List<Semester>.from(_storage.getSemesters());
+    _tasks = List<TaskItem>.from(_storage.getTasks());
+    _events = List<CalendarEvent>.from(_storage.getEvents());
+    _sessions = List<StudySession>.from(_storage.getSessions());
+    _documents = List<ScannedDocument>.from(_storage.getDocuments());
 
     // Default to main program if available
     if (_programs.isNotEmpty && _selectedProgramId == null) {
       _selectedProgramId = _programs.first.id;
     }
     recalculateAllMetrics();
+  }
+
+  /// Loads authenticated user data from Cloud Firestore
+  Future<void> loadUserData(String userId) async {
+    try {
+      final remoteProfile = await _firestoreUserService.fetchUserProfile(userId);
+      if (remoteProfile != null) {
+        _profile = remoteProfile;
+        if (_programs.isEmpty || _programs.first.department != remoteProfile.department) {
+          final progs = <Program>[
+            Program(
+              id: 'main_${remoteProfile.department.toLowerCase().replaceAll(' ', '_')}',
+              name: remoteProfile.department,
+              department: remoteProfile.department,
+              type: ProgramType.main,
+              gano: remoteProfile.previousGpa ?? remoteProfile.currentGano,
+              completedAkts: remoteProfile.previousCompletedAKTS > 0
+                  ? remoteProfile.previousCompletedAKTS
+                  : remoteProfile.completedAkts,
+            ),
+          ];
+          if (remoteProfile.secondProgramType.toUpperCase() == 'CAP' && remoteProfile.secondProgramName != null) {
+            progs.add(Program(
+              id: 'cap_${remoteProfile.secondProgramName!.toLowerCase().replaceAll(' ', '_')}',
+              name: remoteProfile.secondProgramName!,
+              department: remoteProfile.secondProgramName!,
+              type: ProgramType.cap,
+              gano: 0.0,
+              completedAkts: 0,
+            ));
+          } else if (remoteProfile.secondProgramType.toUpperCase() == 'MINOR' && remoteProfile.secondProgramName != null) {
+            progs.add(Program(
+              id: 'minor_${remoteProfile.secondProgramName!.toLowerCase().replaceAll(' ', '_')}',
+              name: remoteProfile.secondProgramName!,
+              department: remoteProfile.secondProgramName!,
+              type: ProgramType.minor,
+              gano: 0.0,
+              completedAkts: 0,
+            ));
+          }
+          _programs = progs;
+          _selectedProgramId = progs.first.id;
+        }
+      } else {
+        // No remote profile found; ensure local profile is associated with the authenticated UID
+        _profile = _profile.copyWith(id: userId);
+      }
+      final remoteSemesters = await _firestoreUserService.fetchUserSemesters(userId);
+      if (remoteSemesters.isNotEmpty) {
+        _semesters = remoteSemesters;
+      }
+      final remoteSessions = await _firestoreUserService.fetchSessionHistory(userId);
+      if (remoteSessions.isNotEmpty) {
+        _sessions = remoteSessions;
+      }
+    } catch (e) {
+      debugPrint('[AcademicService] loadUserData remote sync note: $e');
+    }
+    recalculateAllMetrics();
+  }
+
+  /// Clears in-memory user data upon logout to prevent state leakage between accounts
+  void clearUserData() {
+    _profile = StorageService.cleanInitialUser;
+    _programs = [];
+    _semesters = [];
+    _tasks = [];
+    _events = [];
+    _sessions = [];
+    _documents = [];
+    _selectedProgramId = null;
+    notifyListeners();
+  }
+
+  /// Initializes a freshly registered user with zero fake courses, semesters, or XP
+  Future<void> resetToCleanUser(UserProfile cleanProfile) async {
+    _profile = cleanProfile;
+    final progs = <Program>[
+      Program(
+        id: 'main_${cleanProfile.department.toLowerCase().replaceAll(' ', '_')}',
+        name: cleanProfile.department,
+        department: cleanProfile.department,
+        type: ProgramType.main,
+        gano: cleanProfile.previousGpa ?? 0.0,
+        completedAkts: cleanProfile.previousCompletedAKTS,
+      ),
+    ];
+
+    if (cleanProfile.secondProgramType.toUpperCase() == 'CAP' && cleanProfile.secondProgramName != null) {
+      progs.add(Program(
+        id: 'cap_${cleanProfile.secondProgramName!.toLowerCase().replaceAll(' ', '_')}',
+        name: cleanProfile.secondProgramName!,
+        department: cleanProfile.secondProgramName!,
+        type: ProgramType.cap,
+        gano: 0.0,
+        completedAkts: 0,
+      ));
+    } else if (cleanProfile.secondProgramType.toUpperCase() == 'MINOR' && cleanProfile.secondProgramName != null) {
+      progs.add(Program(
+        id: 'minor_${cleanProfile.secondProgramName!.toLowerCase().replaceAll(' ', '_')}',
+        name: cleanProfile.secondProgramName!,
+        department: cleanProfile.secondProgramName!,
+        type: ProgramType.minor,
+        gano: 0.0,
+        completedAkts: 0,
+      ));
+    }
+
+    _programs = progs;
+    _semesters = [];
+    _tasks = [];
+    _events = [];
+    _sessions = [];
+    _documents = [];
+    _selectedProgramId = _programs.first.id;
+
+    _persistAll();
+    await _firestoreUserService.saveUserProfile(_profile);
+    notifyListeners();
   }
 
   // Getters
@@ -105,13 +230,24 @@ class AcademicService extends ChangeNotifier {
       _semesters[i] = sem.copyWith(semesterGpa: gpa, totalAkts: akts);
     }
 
-    // 2. Recalculate GANO for each program
+    // 2. Recalculate GANO for each program incorporating academic baseline
     for (int i = 0; i < _programs.length; i++) {
       final prog = _programs[i];
       final progSemesters = _semesters.where((s) => s.programId == prog.id).toList();
-      final gano = GradeCalculator.calculateCumulativeGano(progSemesters);
-      final completedAkts = GradeCalculator.calculateTotalCompletedAkts(progSemesters);
-      _programs[i] = prog.copyWith(gano: gano, completedAkts: completedAkts);
+      final isMain = prog.type == ProgramType.main;
+      final baselineGpa = isMain ? _profile.previousGpa : null;
+      final baselineAkts = isMain ? _profile.previousCompletedAKTS : 0;
+
+      final gano = GradeCalculator.calculateCumulativeGanoWithBaseline(
+        progSemesters,
+        baselineGpa: baselineGpa,
+        baselineAkts: baselineAkts,
+      );
+      final completedAkts = GradeCalculator.calculateTotalCompletedAkts(
+        progSemesters,
+        baselineAkts: baselineAkts,
+      );
+      _programs[i] = prog.copyWith(gano: gano ?? 0.0, completedAkts: completedAkts);
     }
 
     // 3. Update main profile metrics from main program
@@ -138,6 +274,9 @@ class AcademicService extends ChangeNotifier {
     _storage.saveEvents(_events);
     _storage.saveSessions(_sessions);
     _storage.saveDocuments(_documents);
+
+    // Sync profile to Cloud Firestore
+    _firestoreUserService.saveUserProfile(_profile);
   }
 
   // Course Management
@@ -149,6 +288,8 @@ class AcademicService extends ChangeNotifier {
     required int credit,
     required int akts,
     required String programId,
+    String programType = 'MAIN',
+    String? programName,
     String? letterGrade,
   }) {
     final semIndex = _semesters.indexWhere((s) => s.id == semesterId);
@@ -162,6 +303,8 @@ class AcademicService extends ChangeNotifier {
       credit: credit,
       akts: akts,
       programId: programId,
+      programType: programType,
+      programName: programName,
       semesterId: semesterId,
       letterGrade: letterGrade,
       isCompleted: letterGrade != null,
@@ -170,6 +313,8 @@ class AcademicService extends ChangeNotifier {
     final updatedCourses = List<Course>.from(_semesters[semIndex].courses)..add(newCourse);
     _semesters[semIndex] = _semesters[semIndex].copyWith(courses: updatedCourses);
     recalculateAllMetrics();
+
+    _firestoreUserService.saveCourse(_profile.id, semesterId, newCourse);
   }
 
   void updateCourse(Course updatedCourse) {
@@ -180,6 +325,7 @@ class AcademicService extends ChangeNotifier {
         final updatedCourses = List<Course>.from(sem.courses);
         updatedCourses[cIdx] = updatedCourse;
         _semesters[i] = sem.copyWith(courses: updatedCourses);
+        _firestoreUserService.saveCourse(_profile.id, sem.id, updatedCourse);
         break;
       }
     }
@@ -187,13 +333,18 @@ class AcademicService extends ChangeNotifier {
   }
 
   void deleteCourse(String courseId) {
+    String? targetSemId;
     for (int i = 0; i < _semesters.length; i++) {
       final sem = _semesters[i];
       final updatedCourses = sem.courses.where((c) => c.id != courseId).toList();
       if (updatedCourses.length != sem.courses.length) {
+        targetSemId = sem.id;
         _semesters[i] = sem.copyWith(courses: updatedCourses);
         break;
       }
+    }
+    if (targetSemId != null) {
+      _firestoreUserService.deleteCourse(_profile.id, targetSemId, courseId);
     }
     _tasks.removeWhere((t) => t.courseId == courseId);
     _events.removeWhere((e) => e.courseId == courseId);
@@ -226,6 +377,8 @@ class AcademicService extends ChangeNotifier {
 
     _semesters.insert(0, newSem);
     recalculateAllMetrics();
+
+    _firestoreUserService.saveSemester(_profile.id, newSem);
   }
 
   // Task Management
@@ -302,16 +455,16 @@ class AcademicService extends ChangeNotifier {
   void addStudySession(StudySession session) {
     _sessions.insert(0, session);
     _storage.saveSessions(_sessions);
+    _firestoreUserService.saveSessionSummary(_profile.id, session);
     notifyListeners();
   }
 
   // Profile and Onboarding
   void updateProfile(UserProfile newProfile) {
     _profile = newProfile;
-    // Update or create programs if ÇAP/Yandal changed
     final updatedPrograms = <Program>[
       Program(
-        id: 'main_ceng',
+        id: 'main_${_profile.department.toLowerCase().replaceAll(' ', '_')}',
         name: _profile.department,
         department: _profile.department,
         type: ProgramType.main,
@@ -381,50 +534,108 @@ class AcademicService extends ChangeNotifier {
     return map;
   }
 
-  // --- Gamification Logic ---
-  Future<void> addXp(int amount, {String? reason}) async {
-    int currentXp = _profile.xp + amount;
-    int currentLevel = _profile.level;
-    int currentMax = _profile.maxXp;
-
-    while (currentXp >= currentMax) {
-      currentXp -= currentMax;
-      currentLevel += 1;
-      currentMax = (currentLevel * 300) + 1000;
-    }
-
-    _profile = _profile.copyWith(
-      xp: currentXp,
-      level: currentLevel,
-      maxXp: currentMax,
+  // --- Real Gamification Logic (GamificationService) ---
+  Future<void> addXp(int amount, {String? reason, String? idempotencyKey}) async {
+    final key = idempotencyKey ?? 'xp_${DateTime.now().microsecondsSinceEpoch}';
+    final awarded = await GamificationService.instance.awardXp(
+      userId: _profile.id,
+      amount: amount,
+      reason: reason ?? 'Academic Focus Activity',
+      idempotencyKey: key,
     );
-    await _storage.saveProfile(_profile);
-    notifyListeners();
+
+    if (awarded != null && awarded > 0) {
+      final newTotalXp = _profile.xp + awarded;
+      final newLevel = GamificationService.calculateLevel(newTotalXp);
+      final nextLevelXp = GamificationService.xpForLevel(newLevel + 1);
+
+      _profile = _profile.copyWith(
+        xp: newTotalXp,
+        level: newLevel,
+        maxXp: nextLevelXp,
+      );
+      _persistAll();
+      notifyListeners();
+    }
   }
 
   Future<void> addFocusMinutes(int minutes) async {
     _profile = _profile.copyWith(
       focusMinutesTotal: _profile.focusMinutesTotal + minutes,
     );
-    await _storage.saveProfile(_profile);
+    _persistAll();
     notifyListeners();
   }
 
   Future<void> completeTaskAndReward(String taskId) async {
     final idx = _tasks.indexWhere((t) => t.id == taskId);
     if (idx != -1) {
-      _tasks[idx] = _tasks[idx].copyWith(isCompleted: true);
-      await _storage.saveTasks(_tasks);
-      await addXp(40, reason: 'Task Completed: ${_tasks[idx].title}');
+      final task = _tasks[idx];
+      _tasks[idx] = task.copyWith(isCompleted: true);
+      _storage.saveTasks(_tasks);
+      final isHigh = task.priority.toLowerCase() == 'high';
+      final reward = isHigh
+          ? GamificationService.xpHighPriorityTask
+          : GamificationService.xpNormalTask;
+      await addXp(
+        reward,
+        reason: 'Task Completed: ${task.title}',
+        idempotencyKey: 'task_${task.id}',
+      );
       notifyListeners();
     }
   }
 
-  Future<void> recordStudySessionAndReward(StudySession session, {int earnedXp = 50}) async {
+  void _updateStreakOnSession(DateTime sessionDate) {
+    final now = sessionDate;
+    final today = DateTime(now.year, now.month, now.day);
+
+    final previousSessions = _sessions.skip(1).toList();
+    if (previousSessions.isEmpty) {
+      _profile = _profile.copyWith(studyStreakDays: 1);
+      return;
+    }
+
+    final lastDate = previousSessions.first.timestamp;
+    final lastDay = DateTime(lastDate.year, lastDate.month, lastDate.day);
+    final diffDays = today.difference(lastDay).inDays;
+
+    if (diffDays == 1) {
+      _profile = _profile.copyWith(studyStreakDays: _profile.studyStreakDays + 1);
+    } else if (diffDays == 0) {
+      if (_profile.studyStreakDays == 0) {
+        _profile = _profile.copyWith(studyStreakDays: 1);
+      }
+    } else {
+      _profile = _profile.copyWith(studyStreakDays: 1);
+    }
+  }
+
+  Future<void> recordStudySessionAndReward(StudySession session, {int? earnedXp}) async {
     _sessions.insert(0, session);
-    await _storage.saveSessions(_sessions);
+    _storage.saveSessions(_sessions);
+    _firestoreUserService.saveSessionSummary(_profile.id, session);
+    _updateStreakOnSession(session.timestamp);
     await addFocusMinutes(session.durationMinutes);
-    await addXp(earnedXp, reason: 'Focus Session Completed');
+
+    int xp = earnedXp ?? 0;
+    if (earnedXp == null) {
+      if (session.durationMinutes >= 90) {
+        xp = GamificationService.xpFocus90PlusMin;
+      } else if (session.durationMinutes >= 50) {
+        xp = GamificationService.xpFocus50To60Min;
+      } else if (session.durationMinutes >= 25) {
+        xp = GamificationService.xpFocus25To30Min;
+      }
+    }
+
+    if (xp > 0) {
+      await addXp(
+        xp,
+        reason: 'Focus Session Completed (${session.durationMinutes}m)',
+        idempotencyKey: 'session_${session.id}',
+      );
+    }
     notifyListeners();
   }
 
@@ -432,8 +643,8 @@ class AcademicService extends ChangeNotifier {
     if (!_profile.achievements.contains(title)) {
       final updated = List<String>.from(_profile.achievements)..add(title);
       _profile = _profile.copyWith(achievements: updated);
-      await _storage.saveProfile(_profile);
-      await addXp(100, reason: 'Achievement Unlocked: $title');
+      _persistAll();
+      await addXp(100, reason: 'Achievement Unlocked: $title', idempotencyKey: 'ach_$title');
       notifyListeners();
     }
   }

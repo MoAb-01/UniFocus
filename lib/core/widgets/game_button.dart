@@ -122,14 +122,15 @@ class _GameButtonState extends State<GameButton> {
     );
 
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTapDown: isDisabled ? null : (_) => setState(() => _isPressed = true),
-      onTapUp: isDisabled
+      onTapCancel: isDisabled ? null : () => setState(() => _isPressed = false),
+      onTap: isDisabled
           ? null
-          : (_) {
+          : () {
               setState(() => _isPressed = false);
               widget.onPressed?.call();
             },
-      onTapCancel: isDisabled ? null : () => setState(() => _isPressed = false),
       child: widget.isExpanded
           ? SizedBox(width: double.infinity, child: buttonContent)
           : buttonContent,

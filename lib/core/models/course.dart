@@ -8,6 +8,8 @@ class Course {
   final int credit;
   final int akts;
   final String programId;
+  final String programType; // 'MAIN', 'CAP', 'MINOR'
+  final String? programName;
   final String semesterId;
   final String? letterGrade;
   final double? gradePoints;
@@ -22,6 +24,8 @@ class Course {
     required this.credit,
     required this.akts,
     required this.programId,
+    this.programType = 'MAIN',
+    this.programName,
     required this.semesterId,
     this.letterGrade,
     this.gradePoints,
@@ -47,6 +51,8 @@ class Course {
     int? credit,
     int? akts,
     String? programId,
+    String? programType,
+    String? programName,
     String? semesterId,
     String? letterGrade,
     double? gradePoints,
@@ -61,6 +67,8 @@ class Course {
       credit: credit ?? this.credit,
       akts: akts ?? this.akts,
       programId: programId ?? this.programId,
+      programType: programType ?? this.programType,
+      programName: programName ?? this.programName,
       semesterId: semesterId ?? this.semesterId,
       letterGrade: letterGrade ?? this.letterGrade,
       gradePoints: gradePoints ?? this.gradePoints,
@@ -77,6 +85,8 @@ class Course {
     'credit': credit,
     'akts': akts,
     'programId': programId,
+    'programType': programType,
+    'programName': programName,
     'semesterId': semesterId,
     'letterGrade': letterGrade,
     'gradePoints': gradePoints,
@@ -92,6 +102,8 @@ class Course {
     credit: json['credit'] as int? ?? 3,
     akts: json['akts'] as int? ?? 5,
     programId: json['programId'] as String? ?? 'main_prog',
+    programType: (json['programType'] as String?)?.toUpperCase() ?? 'MAIN',
+    programName: json['programName'] as String?,
     semesterId: json['semesterId'] as String? ?? '',
     letterGrade: json['letterGrade'] as String?,
     gradePoints: (json['gradePoints'] as num?)?.toDouble(),

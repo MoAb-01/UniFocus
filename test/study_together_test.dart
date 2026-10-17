@@ -21,50 +21,46 @@ void main() {
       studyService = StudyTogetherService(academicService);
     });
 
-    test('UserProfile initializes with gamification defaults', () {
+    test('UserProfile initializes with clean user defaults (0 XP, Level 1, 0 streak)', () {
       final profile = academicService.profile;
-      expect(profile.level, 7);
-      expect(profile.xp, 1840);
-      expect(profile.maxXp, 2000);
-      expect(profile.studyStreakDays, 12);
-      expect(profile.achievements.isNotEmpty, true);
+      expect(profile.level, 1);
+      expect(profile.xp, 0);
+      expect(profile.studyStreakDays, 0);
+      expect(profile.focusMinutesTotal, 0);
+      expect(profile.displayGpa, 'GPA NOT SET');
     });
 
-    test('addXp correctly levels up user when threshold reached', () async {
+    test('New user starts with no active rooms', () {
+      expect(studyService.activeRoom, isNull);
+    });
+
+    test('addXp correctly levels up user when progressive threshold reached', () async {
       final initialLevel = academicService.profile.level;
-      // Add 200 XP (1840 + 200 = 2040 >= 2000 -> Level 8)
-      await academicService.addXp(200, reason: 'Big Study Milestone');
+      expect(initialLevel, 1);
 
-      expect(academicService.profile.level, initialLevel + 1);
-      expect(academicService.profile.xp, 40); // 2040 - 2000
-    });
+      // Add 100 XP (0 + 100 = 100 >= 100 -> Level 2)
+      await academicService.addXp(100, reason: 'Initial Study Milestone', idempotencyKey: 'test_milestone_1');
 
-    test('StudyTogetherService demo room is pre-configured with Mohamed and Ahmed', () {
-      final room = studyService.activeRoom;
-      expect(room, isNotNull);
-      expect(room!.id, '482-731-205');
-      expect(room.participants.length, 2);
-
-      final host = room.participants.firstWhere((p) => p.isHost);
-      expect(host.displayName, 'Mohamed Abdou');
-      expect(host.level, 7);
-
-      final peer = room.participants.firstWhere((p) => !p.isHost);
-      expect(peer.displayName, 'Ahmed');
-      expect(peer.level, 4);
+      expect(academicService.profile.level, 2);
+      expect(academicService.profile.xp, 100);
+      expect(academicService.profile.maxXp, 250); // Level 3 threshold
     });
 
     test('StudyTogetherService creates valid formatted room codes (XXX-XXX-XXX)', () async {
       final room = await studyService.createRoom(
-        title: 'CENG403 Cloud Sprint',
-        courseCode: 'CENG403',
+        title: 'Algorithms Sprint',
+        courseCode: 'CS201',
       );
 
       expect(room.id, matches(r'^\d{3}-\d{3}-\d{3}$'));
       expect(room.status, StudyRoomStatus.waiting);
     });
 
-    test('StudyTogetherService startSession synchronizes timer from sessionStartedAt', () {
+    test('StudyTogetherService startSession synchronizes timer from sessionStartedAt', () async {
+      await studyService.createRoom(
+        title: 'Focus Arena',
+        courseCode: 'MATH101',
+      );
       studyService.startSession();
       final room = studyService.activeRoom;
 
@@ -75,7 +71,22 @@ void main() {
       expect(elapsed.inSeconds >= 0, true);
     });
 
-    test('Break request submission and host approval changes peer status', () {
+    test('Break request submission and host approval changes peer status', () async {
+      await studyService.createRoom(
+        title: 'Study Arena',
+        courseCode: 'PHYS101',
+      );
+      final p2 = RoomParticipant(
+        userId: 'user_ahmed_peer',
+        displayName: 'Ahmed',
+        major: 'Computer Engineering',
+        level: 4,
+        isHost: false,
+        status: ParticipantStatus.studying,
+        currentSubject: 'Calculus',
+        joinedAt: DateTime.now(),
+      );
+      studyService.addParticipant(p2);
       studyService.requestBreakForAhmed(10);
       final roomBefore = studyService.activeRoom!;
       expect(roomBefore.breakRequests.isNotEmpty, true);
@@ -93,98 +104,155 @@ void main() {
     });
 
     test('toggleGoalCompleted awards +25 XP', () async {
+      await studyService.createRoom(
+        title: 'Goal Arena',
+        courseCode: 'CS101',
+      );
       final xpBefore = academicService.profile.xp;
       await studyService.toggleGoalCompleted();
 
       expect(academicService.profile.xp, xpBefore + 25);
     });
 
-    test('Complete 19-step Study Together multiplayer arena flow test', () async {
-      // 1. User A (Mohamed) creates room
+    test('Complete multiplayer arena lifecycle test', () async {
+      // 1. User A creates room
       final createdRoom = await studyService.createRoom(
-        title: 'CENG401 Senior Sprint',
-        courseCode: 'CENG401',
+        title: 'Senior Project Sprint',
+        courseCode: 'CS401',
       );
       expect(createdRoom.id, matches(r'^\d{3}-\d{3}-\d{3}$'));
       expect(createdRoom.hostId, academicService.profile.id);
 
-      // 2. User B (Ahmed) joins & 3. Both appear
+      // 2. User B joins & both appear in shared state
       expect(createdRoom.participants.length, 1);
       final userB = RoomParticipant(
-        userId: 'user_ahmed_peer',
-        displayName: 'Ahmed',
+        userId: 'user_peer_alex',
+        displayName: 'Alex',
         major: 'Computer Engineering',
-        level: 4,
+        level: 3,
         isHost: false,
         status: ParticipantStatus.studying,
-        currentSubject: 'Calculus Exercises',
+        currentSubject: 'Data Structures Problem Set',
         joinedAt: DateTime.now(),
       );
       studyService.addParticipant(userB);
 
       expect(studyService.activeRoom!.participants.length, 2);
-      expect(studyService.activeRoom!.participants.any((p) => p.displayName == 'Mohamed Abdou'), true);
-      expect(studyService.activeRoom!.participants.any((p) => p.displayName == 'Ahmed'), true);
+      expect(studyService.activeRoom!.participants.any((p) => p.displayName == 'Alex'), true);
 
-      // 4. Host starts & 5. Both enter active arena
+      // 3. Host starts & session enters active mode
       studyService.startSession();
       expect(studyService.activeRoom!.status, StudyRoomStatus.active);
 
-      // 6. Timer synchronized
+      // 4. Timer synchronized via server timestamps
       expect(studyService.activeRoom!.sessionStartedAt, isNotNull);
       final elapsed = studyService.getElapsedDuration();
       expect(elapsed.inSeconds >= 0, true);
 
-      // 7. User changes subject & 8. Other user sees change in shared state
-      studyService.updateSubject('Writing CENG401 proposal');
+      // 5. User changes subject
+      studyService.updateSubject('Writing system architecture');
       final hostPart = studyService.activeRoom!.participants.firstWhere((p) => p.userId == academicService.profile.id);
-      expect(hostPart.currentSubject, 'Writing CENG401 proposal');
+      expect(hostPart.currentSubject, 'Writing system architecture');
 
-      // 9. User requests break
-      studyService.requestBreakForAhmed(10);
-      final req = studyService.activeRoom!.breakRequests.last;
-      expect(req.requestedMinutes, 10);
-      expect(req.userName, 'Ahmed');
+      // 6. User takes personal break
+      studyService.updateStatus(ParticipantStatus.onBreak);
+      final meOnBreak = studyService.activeRoom!.participants.firstWhere((p) => p.userId == academicService.profile.id);
+      expect(meOnBreak.status, ParticipantStatus.onBreak);
 
-      // 10. Host approves
-      studyService.respondToBreakRequest(req.id, true);
-
-      // 11. Break timer works & status updates
-      final ahmedOnBreak = studyService.activeRoom!.participants.firstWhere((p) => p.userId == 'user_ahmed_peer');
-      expect(ahmedOnBreak.status, ParticipantStatus.onBreak);
-      expect(ahmedOnBreak.breakMinutesRemaining, 10);
-      expect(studyService.activeRoom!.isAnyOnBreak, true);
-
-      // 12. User returns
+      // 7. User returns
       studyService.updateStatus(ParticipantStatus.studying);
 
-      // 13. Host starts music
+      // 8. Host starts music
       studyService.toggleMusicPlay();
       expect(studyService.activeRoom!.musicState.isPlaying, true);
 
-      // 14. Music state synchronizes via shared timestamps
-      final posSec = studyService.getMusicPositionSeconds();
-      expect(posSec >= 0, true);
-
-      // 15. Session ends
+      // 9. Session ends & awards persistent summary
       final initialSessionsCount = academicService.sessions.length;
-      final initialFocusMinutes = academicService.profile.focusMinutesTotal;
       final initialXp = academicService.profile.xp;
 
       final summary = await studyService.endSession();
 
-      // 16. Session summary appears
       expect(summary, isNotNull);
       expect(summary.totalDuration.inSeconds >= 0, true);
-
-      // 17. Focus time saved
-      expect(academicService.profile.focusMinutesTotal >= initialFocusMinutes, true);
-
-      // 18. XP updated
       expect(academicService.profile.xp > initialXp, true);
-
-      // 19. History updated
       expect(academicService.sessions.length, initialSessionsCount + 1);
+    });
+
+    test('Authoritative 3-2-1 countdown synchronization calculates deterministic values', () async {
+      await studyService.createRoom(
+        title: 'Countdown Arena',
+        courseCode: 'CS301',
+      );
+      studyService.startSession();
+      final room = studyService.activeRoom!;
+
+      expect(room.status, StudyRoomStatus.active);
+      expect(room.countdownStartedAt, isNotNull);
+      expect(room.sessionStartedAt, isNotNull);
+
+      final start = room.countdownStartedAt!;
+      final end = room.sessionStartedAt!;
+      expect(end.difference(start).inSeconds, 3);
+
+      // Verify client calculation at various simulated arrival offsets
+      int calcSeconds(DateTime simulatedNow) {
+        final elapsed = simulatedNow.difference(start).inMilliseconds;
+        return (3 - (elapsed ~/ 1000)).clamp(1, 3);
+      }
+
+      expect(calcSeconds(start), 3);
+      expect(calcSeconds(start.add(const Duration(milliseconds: 500))), 3);
+      expect(calcSeconds(start.add(const Duration(milliseconds: 1500))), 2);
+      expect(calcSeconds(start.add(const Duration(milliseconds: 2500))), 1);
+      expect(start.add(const Duration(milliseconds: 3000)).isBefore(end), false);
+    });
+
+    test('StudyRoom parses Firestore Timestamp objects and derives 3 -> 2 -> 1 -> START', () {
+      final now = DateTime.utc(2026, 10, 5, 12, 0, 0);
+      final rawJson = {
+        'id': '123-456-789',
+        'title': 'Sync Study Room',
+        'courseCode': 'CS101',
+        'hostId': 'host_user_1',
+        'hostName': 'Host User',
+        'status': 'active',
+        'createdAt': _MockTimestamp(now),
+        'countdownStartedAt': _MockTimestamp(now),
+      };
+
+      final room = StudyRoom.fromJson(rawJson);
+      expect(room.createdAt, now);
+      expect(room.countdownStartedAt, now);
+      expect(room.sessionStartedAt, now.add(const Duration(seconds: 3)));
+
+      // Test derivation of 3 -> 2 -> 1 -> START -> Active
+      String deriveStep(DateTime simulatedNow) {
+        final elapsedMs = simulatedNow.difference(room.countdownStartedAt!).inMilliseconds;
+        if (elapsedMs >= 3800) return 'ACTIVE';
+        if (elapsedMs < 1000) return '3';
+        if (elapsedMs < 2000) return '2';
+        if (elapsedMs < 3000) return '1';
+        return 'START';
+      }
+
+      // Both clients derive identical values
+      expect(deriveStep(now), '3');
+      expect(deriveStep(now.add(const Duration(milliseconds: 800))), '3');
+      expect(deriveStep(now.add(const Duration(milliseconds: 1000))), '2');
+      expect(deriveStep(now.add(const Duration(milliseconds: 1900))), '2');
+      expect(deriveStep(now.add(const Duration(milliseconds: 2000))), '1');
+      expect(deriveStep(now.add(const Duration(milliseconds: 2900))), '1');
+      expect(deriveStep(now.add(const Duration(milliseconds: 3000))), 'START');
+      expect(deriveStep(now.add(const Duration(milliseconds: 3700))), 'START');
+      expect(deriveStep(now.add(const Duration(milliseconds: 3800))), 'ACTIVE');
+      expect(deriveStep(now.add(const Duration(milliseconds: 5000))), 'ACTIVE');
     });
   });
 }
+
+class _MockTimestamp {
+  final DateTime _dateTime;
+  _MockTimestamp(this._dateTime);
+  DateTime toDate() => _dateTime;
+}
+

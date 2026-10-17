@@ -25,8 +25,23 @@ class GradeCalculator {
 
   /// Calculates cumulative GANO across all semesters for a given program.
   static double calculateCumulativeGano(List<Semester> semesters) {
+    return calculateCumulativeGanoWithBaseline(semesters) ?? 0.0;
+  }
+
+  /// Calculates cumulative GANO incorporating existing academic baseline (if any).
+  /// Returns null if no baseline is set and no courses are graded.
+  static double? calculateCumulativeGanoWithBaseline(
+    List<Semester> semesters, {
+    double? baselineGpa,
+    int baselineAkts = 0,
+  }) {
     double totalWeightedPoints = 0.0;
     int totalCompletedAkts = 0;
+
+    if (baselineGpa != null && baselineAkts > 0) {
+      totalWeightedPoints += baselineGpa * baselineAkts;
+      totalCompletedAkts += baselineAkts;
+    }
 
     for (final semester in semesters) {
       for (final course in semester.courses) {
@@ -39,16 +54,23 @@ class GradeCalculator {
       }
     }
 
-    if (totalCompletedAkts == 0) return 0.0;
+    if (totalCompletedAkts == 0) {
+      return baselineGpa;
+    }
     return double.parse((totalWeightedPoints / totalCompletedAkts).toStringAsFixed(2));
   }
 
-  /// Calculates total completed AKTS.
-  static int calculateTotalCompletedAkts(List<Semester> semesters) {
-    int akts = 0;
+  /// Calculates total completed AKTS, including baseline.
+  static int calculateTotalCompletedAkts(
+    List<Semester> semesters, {
+    int baselineAkts = 0,
+  }) {
+    int akts = baselineAkts;
     for (final semester in semesters) {
       for (final course in semester.courses) {
-        if (course.isCompleted || (course.letterGrade != null && AppConstants.isPassingGrade(course.letterGrade!))) {
+        if (course.isCompleted ||
+            (course.letterGrade != null &&
+                AppConstants.isPassingGrade(course.letterGrade!))) {
           akts += course.akts;
         }
       }

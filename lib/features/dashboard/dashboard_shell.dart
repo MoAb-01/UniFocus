@@ -12,14 +12,18 @@ import '../profile/profile_screen.dart';
 import '../study_together/study_together_entry_screen.dart';
 import 'dashboard_screen.dart';
 
+import '../../core/services/auth_service.dart';
+
 class DashboardShell extends StatefulWidget {
   final AcademicService academicService;
   final StorageService storage;
+  final AuthService? authService;
 
   const DashboardShell({
     super.key,
     required this.academicService,
     required this.storage,
+    this.authService,
   });
 
   @override
@@ -83,6 +87,7 @@ class _DashboardShellState extends State<DashboardShell> {
       ProfileScreen(
         academicService: widget.academicService,
         storage: widget.storage,
+        authService: widget.authService,
       ),
     ];
 

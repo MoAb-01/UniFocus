@@ -7,16 +7,23 @@ import '../../core/theme/app_colors.dart';
 import '../../core/widgets/section_header.dart';
 import '../../core/widgets/streak_badge.dart';
 import '../../core/widgets/xp_bar.dart';
+import '../../core/models/user_settings.dart';
+import '../../core/services/auth_service.dart';
+import '../../core/services/firestore_user_service.dart';
+import '../../core/localization/app_localizations.dart';
+import '../authentication/login_screen.dart';
 import '../onboarding/academic_onboarding_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final AcademicService academicService;
   final StorageService storage;
+  final AuthService? authService;
 
   const ProfileScreen({
     super.key,
     required this.academicService,
     required this.storage,
+    this.authService,
   });
 
   @override
@@ -268,13 +275,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // Settings & Controls
               const SectionHeader(title: 'Preferences & Actions'),
-              Container(
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceLight,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.borderLight),
-                ),
-                child: Column(
+              Material(
+                color: AppColors.surfaceLight,
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.borderLight),
+                  ),
+                  child: Column(
                   children: [
                     ListTile(
                       leading: const Icon(Icons.edit_outlined, size: 20, color: AppColors.brandBlue),
@@ -293,31 +302,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         );
                       },
                     ),
+                    ListTile(
+                      leading: const Icon(Icons.settings_outlined, size: 20, color: AppColors.brandBlue),
+                      title: const Text('App Settings & Privacy', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+                      subtitle: const Text('Dark mode, room audio, notifications, and privacy', style: TextStyle(fontSize: 12)),
+                      trailing: const Icon(Icons.chevron_right, size: 20),
+                      onTap: _showSettingsModal,
+                    ),
                     const Divider(height: 1),
                     ListTile(
-                      leading: const Icon(Icons.refresh_rounded, size: 20, color: AppColors.streakOrange),
-                      title: const Text('Restore Realistic Demo Data', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
-                      subtitle: const Text('Reset courses, assignments, and grades for Mohamed Abdou', style: TextStyle(fontSize: 12)),
+                      leading: const Icon(Icons.logout_rounded, size: 20, color: AppColors.dangerRed),
+                      title: const Text('Sign Out', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.dangerRed)),
+                      subtitle: const Text('Log out of this device', style: TextStyle(fontSize: 12)),
                       trailing: const Icon(Icons.chevron_right, size: 20),
-                      onTap: () async {
-                        await widget.storage.initializeWithSeedData();
-                        widget.academicService.loadData();
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Demo data restored successfully!')),
-                          );
-                        }
-                      },
+                      onTap: _handleSignOut,
                     ),
                     const Divider(height: 1),
                     ListTile(
                       leading: const Icon(Icons.info_outline, size: 20, color: Color(0xFF64748B)),
                       title: const Text('About UniFocus', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
-                      subtitle: Text('${AppConstants.developerCredit} • v${AppConstants.appVersion}', style: const TextStyle(fontSize: 12)),
+                      subtitle: const Text('${AppConstants.developerCredit} • v${AppConstants.appVersion}', style: TextStyle(fontSize: 12)),
                       trailing: const Icon(Icons.chevron_right, size: 20),
                       onTap: () {
                         showAboutDialog(
                           context: context,
+                          applicationIcon: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.asset(
+                              'assets/images/unifocus_logo.png',
+                              width: 52,
+                              height: 52,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
                           applicationName: AppConstants.appName,
                           applicationVersion: AppConstants.appVersion,
                           applicationLegalese: 'Developed by Mohamed Abdou for university students in Türkiye.',
@@ -327,11 +344,223 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+            ),
+            const SizedBox(height: 24),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  void _showSettingsModal() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    UserSettings settings = widget.storage.getUserSettings();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: isDark ? AppColors.surfaceDark : Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) => Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'App Settings & Preferences',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                secondary: const Icon(Icons.dark_mode_outlined, color: AppColors.brandBlue),
+                title: const Text('Dark Mode', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                value: settings.theme == 'dark',
+                onChanged: (val) {
+                  setSheetState(() {
+                    settings = settings.copyWith(theme: val ? 'dark' : 'light');
+                  });
+                },
+              ),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                secondary: const Icon(Icons.music_note_outlined, color: AppColors.gamifyPurple),
+                title: const Text('Ambient Room Audio Enabled', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                value: settings.musicEnabled,
+                onChanged: (val) {
+                  setSheetState(() {
+                    settings = settings.copyWith(musicEnabled: val);
+                  });
+                },
+              ),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                secondary: const Icon(Icons.volume_up_outlined, color: AppColors.gamifyEmerald),
+                title: const Text('Sound Effects & Cues', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                value: settings.soundEnabled,
+                onChanged: (val) {
+                  setSheetState(() {
+                    settings = settings.copyWith(soundEnabled: val);
+                  });
+                },
+              ),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                secondary: const Icon(Icons.notifications_outlined, color: AppColors.streakOrange),
+                title: const Text('Push Notifications', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                value: settings.notificationsEnabled,
+                onChanged: (val) {
+                  setSheetState(() {
+                    settings = settings.copyWith(notificationsEnabled: val);
+                  });
+                },
+              ),
+              const Divider(),
+              const Text('PRIVACY IN STUDY ARENA', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF64748B))),
+              const SizedBox(height: 4),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                secondary: const Icon(Icons.visibility_outlined, size: 20),
+                title: const Text('Show Major / Department to Peers', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                value: settings.privacySettings['showMajorInRoom'] ?? true,
+                onChanged: (val) {
+                  setSheetState(() {
+                    final updatedPrivacy = Map<String, dynamic>.from(settings.privacySettings);
+                    updatedPrivacy['showMajorInRoom'] = val;
+                    settings = settings.copyWith(privacySettings: updatedPrivacy);
+                  });
+                },
+              ),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                secondary: const Icon(Icons.military_tech_outlined, size: 20),
+                title: const Text('Show Level & XP to Peers', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                value: settings.privacySettings['showLevelInRoom'] ?? true,
+                onChanged: (val) {
+                  setSheetState(() {
+                    final updatedPrivacy = Map<String, dynamic>.from(settings.privacySettings);
+                    updatedPrivacy['showLevelInRoom'] = val;
+                    settings = settings.copyWith(privacySettings: updatedPrivacy);
+                  });
+                },
+              ),
+              const Divider(),
+              const Text('APPLICATION LANGUAGE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF64748B))),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: ChoiceChip(
+                      label: const Text('English'),
+                      selected: settings.language == 'en',
+                      onSelected: (_) => setSheetState(() => settings = settings.copyWith(language: 'en')),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ChoiceChip(
+                      label: const Text('Türkçe'),
+                      selected: settings.language == 'tr',
+                      onSelected: (_) => setSheetState(() => settings = settings.copyWith(language: 'tr')),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ChoiceChip(
+                      label: const Text('العربية'),
+                      selected: settings.language == 'ar',
+                      onSelected: (_) => setSheetState(() => settings = settings.copyWith(language: 'ar')),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.brandBlue,
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                onPressed: () async {
+                  await widget.storage.saveUserSettings(settings);
+                  await AppLocalizations.persistLanguage(settings.language);
+                  widget.academicService.updateProfile(
+                    widget.academicService.profile.copyWith(preferredLanguage: settings.language),
+                  );
+                  FirestoreUserService().saveUserSettings(widget.academicService.profile.id, settings);
+                  if (ctx.mounted) Navigator.pop(ctx);
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Preferences saved successfully.')),
+                    );
+                  }
+                },
+                child: const Text('Save Preferences', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleSignOut() async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: isDark ? AppColors.surfaceDark : Colors.white,
+        title: const Text('Sign Out', style: TextStyle(fontWeight: FontWeight.w900)),
+        content: const Text('Are you sure you want to sign out of UniFocus?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.dangerRed),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Sign Out', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true || !mounted) return;
+
+    final auth = widget.authService ?? AuthService();
+    await auth.signOut();
+    widget.academicService.clearUserData();
+
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (_) => LoginScreen(
+          authService: auth,
+          academicService: widget.academicService,
+          storage: widget.storage,
+        ),
+      ),
+      (route) => false,
     );
   }
 }

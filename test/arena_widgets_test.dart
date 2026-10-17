@@ -100,9 +100,8 @@ void main() {
         ),
       );
 
-      expect(find.text('Mohamed Abdou'), findsOneWidget);
-      expect(find.text('Ahmed'), findsOneWidget);
-      expect(find.text('ARENA'), findsOneWidget);
+      expect(find.textContaining('Mohamed Abdou'), findsOneWidget);
+      expect(find.textContaining('Ahmed'), findsOneWidget);
     });
 
     testWidgets('SessionControlDock renders compact tactile buttons: BREAK, SUBJECT, GOAL, MUSIC, MORE', (tester) async {

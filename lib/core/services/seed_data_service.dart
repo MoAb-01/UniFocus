@@ -57,7 +57,7 @@ class SeedDataService {
       courses: [
         const Course(
           id: 'c1',
-          code: 'CENG401',
+          code: 'MATH101',
           name: 'Undergraduate Final Thesis I',
           instructor: 'Prof. Dr. Ayşe Yılmaz',
           credit: 3,
@@ -261,7 +261,7 @@ class SeedDataService {
     TaskItem(
       id: 'task1',
       courseId: 'c1',
-      courseCode: 'CENG401',
+      courseCode: 'MATH101',
       title: 'Project Proposal Submission',
       description: 'Write project introduction, motivation, architecture diagrams, and system requirements document.',
       dueDate: DateTime.now().add(const Duration(days: 3)),
@@ -324,7 +324,7 @@ class SeedDataService {
     CalendarEvent(
       id: 'ev1',
       courseId: 'c1',
-      courseCode: 'CENG401',
+      courseCode: 'MATH101',
       title: 'Thesis Committee Review Meeting',
       type: 'Presentation',
       dateTime: DateTime.now().add(const Duration(days: 2, hours: 3)),
@@ -367,7 +367,7 @@ class SeedDataService {
     StudySession(
       id: 's1',
       courseId: 'c1',
-      courseCode: 'CENG401',
+      courseCode: 'MATH101',
       taskTitle: 'Project Proposal Drafting',
       durationMinutes: 50,
       breakMinutes: 10,
@@ -410,7 +410,7 @@ class SeedDataService {
     ScannedDocument(
       id: 'doc1',
       courseId: 'c1',
-      courseCode: 'CENG401',
+      courseCode: 'MATH101',
       title: 'Thesis Proposal Guidelines & Template',
       category: 'Lecture Notes',
       pageCount: 8,

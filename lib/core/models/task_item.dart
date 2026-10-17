@@ -23,6 +23,8 @@ class TaskItem {
     this.estimatedStudyMinutes = 60,
   });
 
+  int get estimatedMinutes => estimatedStudyMinutes;
+
   TaskItem copyWith({
     String? id,
     String? courseId,

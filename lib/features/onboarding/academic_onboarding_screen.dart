@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/app_constants.dart';
 import '../../core/constants/turkish_universities_data.dart';
+import '../../core/localization/app_localizations.dart';
+import '../../core/models/user_profile.dart';
 import '../../core/services/academic_service.dart';
 import '../../core/services/storage_service.dart';
 import '../../core/theme/app_colors.dart';
@@ -8,15 +9,18 @@ import '../../core/theme/app_typography.dart';
 import '../../core/widgets/app_button.dart';
 import '../../core/widgets/app_text_field.dart';
 import '../dashboard/dashboard_shell.dart';
+import '../../core/services/auth_service.dart';
 
 class AcademicOnboardingScreen extends StatefulWidget {
   final AcademicService academicService;
   final StorageService storage;
+  final AuthService? authService;
 
   const AcademicOnboardingScreen({
     super.key,
     required this.academicService,
     required this.storage,
+    this.authService,
   });
 
   @override
@@ -26,25 +30,44 @@ class AcademicOnboardingScreen extends StatefulWidget {
 class _AcademicOnboardingScreenState extends State<AcademicOnboardingScreen> {
   int _currentStep = 0;
 
-  final _nameController = TextEditingController(text: 'Mohamed Abdou');
+  late final TextEditingController _nameController;
+  final TextEditingController _gpaController = TextEditingController();
+  final TextEditingController _aktsController = TextEditingController();
+  final TextEditingController _semesterController =
+      TextEditingController(text: '2026–2027 Fall');
+
   String _selectedUniversity = 'İzmir Kâtip Çelebi University';
   String _selectedDepartment = 'Computer Engineering';
-  String _selectedYear = AppConstants.academicYears[3]; // 4th Year
+  AcademicYear _selectedYear = AcademicYear.year1;
+  bool _noExistingGpa = false;
 
-  bool _hasCap = true;
+  bool _hasCap = false;
   String _capDepartment = 'Electrical & Electronics Engineering';
 
   bool _hasMinor = false;
   String _minorDepartment = 'Business Administration';
 
+  String _selectedLanguage = 'en';
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(
+      text: widget.academicService.profile.name,
+    );
+  }
+
   @override
   void dispose() {
     _nameController.dispose();
+    _gpaController.dispose();
+    _aktsController.dispose();
+    _semesterController.dispose();
     super.dispose();
   }
 
   void _nextStep() {
-    if (_currentStep < 4) {
+    if (_currentStep < 5) {
       setState(() => _currentStep++);
     } else {
       _finishOnboarding();
@@ -57,26 +80,69 @@ class _AcademicOnboardingScreenState extends State<AcademicOnboardingScreen> {
     }
   }
 
-  void _finishOnboarding() {
+  Future<void> _finishOnboarding() async {
+    final name = _nameController.text.trim().isNotEmpty
+        ? _nameController.text.trim()
+        : (widget.academicService.profile.name.isNotEmpty
+            ? widget.academicService.profile.name
+            : 'UniFocus Student');
+
+    final double? gpa = _noExistingGpa
+        ? null
+        : double.tryParse(_gpaController.text.trim());
+    final int akts = _noExistingGpa
+        ? 0
+        : (int.tryParse(_aktsController.text.trim()) ?? 0);
+
+    final secondType = _hasCap ? 'CAP' : (_hasMinor ? 'MINOR' : 'NONE');
+    final secondName = _hasCap
+        ? _capDepartment
+        : (_hasMinor ? _minorDepartment : null);
+
+    final uid = widget.authService?.currentUserId ??
+        (widget.academicService.profile.id != 'user_initial'
+            ? widget.academicService.profile.id
+            : null);
+
     final updatedProfile = widget.academicService.profile.copyWith(
-      name: _nameController.text.trim().isNotEmpty ? _nameController.text.trim() : 'Mohamed Abdou',
+      id: uid ?? widget.academicService.profile.id,
+      name: name,
+      email: widget.authService?.currentUserEmail ?? widget.academicService.profile.email,
       university: _selectedUniversity,
       department: _selectedDepartment,
-      academicYear: _selectedYear,
+      academicYear: _selectedYear.value,
+      academicYearEnum: _selectedYear,
+      currentSemester: _semesterController.text.trim().isNotEmpty
+          ? _semesterController.text.trim()
+          : '2026–2027 Fall',
+      previousGpa: gpa,
+      previousCompletedAKTS: akts,
+      secondProgramType: secondType,
+      secondProgramName: secondName,
       hasDoubleMajor: _hasCap,
       doubleMajorDepartment: _hasCap ? _capDepartment : null,
       hasMinor: _hasMinor,
       minorDepartment: _hasMinor ? _minorDepartment : null,
+      preferredLanguage: _selectedLanguage,
       isOnboardingCompleted: true,
+      xp: 0,
+      level: 1,
+      studyStreakDays: 0,
+      focusMinutesTotal: 0,
+      currentGano: gpa ?? 0.0,
+      completedAkts: akts,
     );
 
-    widget.academicService.updateProfile(updatedProfile);
+    await AppLocalizations.persistLanguage(_selectedLanguage);
+    await widget.academicService.resetToCleanUser(updatedProfile);
 
+    if (!mounted) return;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (_) => DashboardShell(
           academicService: widget.academicService,
           storage: widget.storage,
+          authService: widget.authService,
         ),
       ),
     );
@@ -101,14 +167,14 @@ class _AcademicOnboardingScreenState extends State<AcademicOnboardingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Progress Bar
+              // Progress Bar (6 steps)
               Row(
-                children: List.generate(5, (index) {
+                children: List.generate(6, (index) {
                   final isActive = index <= _currentStep;
                   return Expanded(
                     child: Container(
                       height: 4,
-                      margin: EdgeInsets.only(right: index < 4 ? 6 : 0),
+                      margin: EdgeInsets.only(right: index < 5 ? 6 : 0),
                       decoration: BoxDecoration(
                         color: isActive ? AppColors.primaryNavy : AppColors.borderLight,
                         borderRadius: BorderRadius.circular(2),
@@ -127,7 +193,7 @@ class _AcademicOnboardingScreenState extends State<AcademicOnboardingScreen> {
               const SizedBox(height: 16),
               // Next/Complete Button
               AppButton(
-                text: _currentStep == 4 ? 'Save Academic Profile' : 'Continue',
+                text: _currentStep == 5 ? 'Save Academic Profile' : 'Continue',
                 onPressed: _nextStep,
               ),
             ],
@@ -148,7 +214,9 @@ class _AcademicOnboardingScreenState extends State<AcademicOnboardingScreen> {
       case 3:
         return _buildStep4Year();
       case 4:
-        return _buildStep5ProgramStructure();
+        return _buildStep5AcademicBaseline();
+      case 5:
+        return _buildStep6ProgramAndLanguage();
       default:
         return const SizedBox();
     }
@@ -158,7 +226,7 @@ class _AcademicOnboardingScreenState extends State<AcademicOnboardingScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Step 1 of 5', style: AppTypography.labelUppercase),
+        const Text('Step 1 of 6', style: AppTypography.labelUppercase),
         const SizedBox(height: 4),
         Text('Personal Information', style: AppTypography.displayMedium),
         const SizedBox(height: 8),
@@ -170,7 +238,7 @@ class _AcademicOnboardingScreenState extends State<AcademicOnboardingScreen> {
         AppTextField(
           label: 'Full Name',
           controller: _nameController,
-          hint: 'e.g. Mohamed Abdou',
+          hint: 'e.g. Alex Morgan',
           prefixIcon: Icons.person_outline,
         ),
       ],
@@ -182,7 +250,7 @@ class _AcademicOnboardingScreenState extends State<AcademicOnboardingScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Step 2 of 5', style: AppTypography.labelUppercase),
+        const Text('Step 2 of 6', style: AppTypography.labelUppercase),
         const SizedBox(height: 4),
         Text('Select University', style: AppTypography.displayMedium),
         const SizedBox(height: 8),
@@ -264,7 +332,7 @@ class _AcademicOnboardingScreenState extends State<AcademicOnboardingScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Step 3 of 5', style: AppTypography.labelUppercase),
+        const Text('Step 3 of 6', style: AppTypography.labelUppercase),
         const SizedBox(height: 4),
         Text('Main Department', style: AppTypography.displayMedium),
         const SizedBox(height: 8),
@@ -313,26 +381,34 @@ class _AcademicOnboardingScreenState extends State<AcademicOnboardingScreen> {
   }
 
   Widget _buildStep4Year() {
+    final years = AcademicYear.values;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Step 4 of 5', style: AppTypography.labelUppercase),
+        const Text('Step 4 of 6', style: AppTypography.labelUppercase),
         const SizedBox(height: 4),
         Text('Academic Standing', style: AppTypography.displayMedium),
         const SizedBox(height: 8),
         Text(
-          'Select your current academic year.',
+          'Select your current academic standing.',
           style: AppTypography.bodyMedium.copyWith(color: AppColors.textSecondaryLight),
         ),
-        const SizedBox(height: 24),
-        ...AppConstants.academicYears.map((year) {
+        const SizedBox(height: 20),
+        ...years.map((year) {
           final isSelected = _selectedYear == year;
           return InkWell(
-            onTap: () => setState(() => _selectedYear = year),
+            onTap: () {
+              setState(() {
+                _selectedYear = year;
+                if (year == AcademicYear.prep) {
+                  _noExistingGpa = true;
+                }
+              });
+            },
             borderRadius: BorderRadius.circular(10),
             child: Container(
-              margin: const EdgeInsets.only(bottom: 10),
-              padding: const EdgeInsets.all(14),
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: isSelected ? AppColors.primaryNavy.withOpacity(0.04) : AppColors.surfaceLight,
                 borderRadius: BorderRadius.circular(10),
@@ -351,9 +427,9 @@ class _AcademicOnboardingScreenState extends State<AcademicOnboardingScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      year,
+                      year.displayName,
                       style: TextStyle(
-                        fontSize: 14.5,
+                        fontSize: 14,
                         fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                         color: AppColors.textPrimaryLight,
                       ),
@@ -370,126 +446,150 @@ class _AcademicOnboardingScreenState extends State<AcademicOnboardingScreen> {
     );
   }
 
-  Widget _buildStep5ProgramStructure() {
+  Widget _buildStep5AcademicBaseline() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Step 5 of 5', style: AppTypography.labelUppercase),
+        const Text('Step 5 of 6', style: AppTypography.labelUppercase),
         const SizedBox(height: 4),
-        Text('Program Structure', style: AppTypography.displayMedium),
+        Text('Academic Baseline', style: AppTypography.displayMedium),
         const SizedBox(height: 8),
         Text(
-          'UniFocus customizes GPA tracking and course grouping for students doing ÇAP (Double Major) or Yandal (Minor).',
+          'Enter your previous university record so your cumulative GPA (GANO) is accurate without needing to enter past courses one by one.',
           style: AppTypography.bodyMedium.copyWith(color: AppColors.textSecondaryLight),
         ),
-        const SizedBox(height: 24),
-        // ÇAP Question Card
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.surfaceLight,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.borderLight),
+        const SizedBox(height: 20),
+        CheckboxListTile(
+          contentPadding: EdgeInsets.zero,
+          title: const Text(
+            'I have no GPA yet (Freshman or Preparatory)',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Are you studying a Double Major (ÇAP)?',
-                    style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600),
-                  ),
-                  Switch(
-                    value: _hasCap,
-                    activeColor: AppColors.primaryNavy,
-                    onChanged: (val) => setState(() => _hasCap = val),
-                  ),
-                ],
-              ),
-              if (_hasCap) ...[
-                const SizedBox(height: 12),
-                const Divider(),
-                const SizedBox(height: 8),
-                const Text(
-                  'Double Major Department',
-                  style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.textSecondaryLight),
-                ),
-                const SizedBox(height: 6),
-                DropdownButtonFormField<String>(
-                  value: _capDepartment,
-                  decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  ),
-                  items: [
-                    'Electrical & Electronics Engineering',
-                    'Industrial Engineering',
-                    'Mechanical Engineering',
-                    'Biomedical Engineering',
-                    'Economics',
-                  ].map((dept) => DropdownMenuItem(value: dept, child: Text(dept, style: const TextStyle(fontSize: 13.5)))).toList(),
-                  onChanged: (val) {
-                    if (val != null) setState(() => _capDepartment = val);
-                  },
-                ),
-              ],
-            ],
+          subtitle: const Text(
+            'Your profile will display "GPA NOT SET" until graded courses are completed.',
+            style: TextStyle(fontSize: 12),
           ),
+          value: _noExistingGpa,
+          onChanged: (val) {
+            setState(() => _noExistingGpa = val ?? false);
+          },
         ),
         const SizedBox(height: 16),
-        // Yandal Question Card
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.surfaceLight,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.borderLight),
+        if (!_noExistingGpa) ...[
+          AppTextField(
+            label: 'Current Cumulative GPA / GANO (0.00 - 4.00)',
+            controller: _gpaController,
+            hint: 'e.g. 3.30',
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            prefixIcon: Icons.grade_outlined,
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Are you studying a Minor (Yandal)?',
-                    style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600),
-                  ),
-                  Switch(
-                    value: _hasMinor,
-                    activeColor: AppColors.primaryNavy,
-                    onChanged: (val) => setState(() => _hasMinor = val),
-                  ),
-                ],
+          const SizedBox(height: 16),
+          AppTextField(
+            label: 'Completed AKTS / ECTS',
+            controller: _aktsController,
+            hint: 'e.g. 126',
+            keyboardType: TextInputType.number,
+            prefixIcon: Icons.fact_check_outlined,
+          ),
+          const SizedBox(height: 16),
+        ],
+        AppTextField(
+          label: 'Current Semester',
+          controller: _semesterController,
+          hint: 'e.g. 2026–2027 Fall',
+          prefixIcon: Icons.calendar_today_outlined,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStep6ProgramAndLanguage() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Step 6 of 6', style: AppTypography.labelUppercase),
+        const SizedBox(height: 4),
+        Text('Programs & Language', style: AppTypography.displayMedium),
+        const SizedBox(height: 8),
+        Text(
+          'Customize double major (ÇAP), minor (Yandal), and preferred interface language.',
+          style: AppTypography.bodyMedium.copyWith(color: AppColors.textSecondaryLight),
+        ),
+        const SizedBox(height: 20),
+        // ÇAP
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: const Text('Double Major (ÇAP)', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+          subtitle: const Text('Enrolled in a secondary Bachelor program', style: TextStyle(fontSize: 12)),
+          value: _hasCap,
+          onChanged: (val) => setState(() {
+            _hasCap = val;
+            if (val) _hasMinor = false;
+          }),
+        ),
+        if (_hasCap) ...[
+          const SizedBox(height: 8),
+          AppTextField(
+            label: 'ÇAP Department Name',
+            controller: TextEditingController(text: _capDepartment),
+            onChanged: (v) => _capDepartment = v,
+            hint: 'e.g. Electrical & Electronics Engineering',
+          ),
+          const SizedBox(height: 16),
+        ],
+        // Minor
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: const Text('Minor Program (Yandal)', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+          subtitle: const Text('Enrolled in an academic minor certification program', style: TextStyle(fontSize: 12)),
+          value: _hasMinor,
+          onChanged: (val) => setState(() {
+            _hasMinor = val;
+            if (val) _hasCap = false;
+          }),
+        ),
+        if (_hasMinor) ...[
+          const SizedBox(height: 8),
+          AppTextField(
+            label: 'Minor Department Name',
+            controller: TextEditingController(text: _minorDepartment),
+            onChanged: (v) => _minorDepartment = v,
+            hint: 'e.g. Business Administration',
+          ),
+          const SizedBox(height: 16),
+        ],
+        const SizedBox(height: 20),
+        const Text(
+          'Application Language',
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: ChoiceChip(
+                label: const Text('English'),
+                selected: _selectedLanguage == 'en',
+                onSelected: (_) => setState(() => _selectedLanguage = 'en'),
               ),
-              if (_hasMinor) ...[
-                const SizedBox(height: 12),
-                const Divider(),
-                const SizedBox(height: 8),
-                const Text(
-                  'Minor Department',
-                  style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.textSecondaryLight),
-                ),
-                const SizedBox(height: 6),
-                DropdownButtonFormField<String>(
-                  value: _minorDepartment,
-                  decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  ),
-                  items: [
-                    'Business Administration',
-                    'Economics',
-                    'Artificial Intelligence',
-                    'Psychology',
-                  ].map((dept) => DropdownMenuItem(value: dept, child: Text(dept, style: const TextStyle(fontSize: 13.5)))).toList(),
-                  onChanged: (val) {
-                    if (val != null) setState(() => _minorDepartment = val);
-                  },
-                ),
-              ],
-            ],
-          ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: ChoiceChip(
+                label: const Text('Türkçe'),
+                selected: _selectedLanguage == 'tr',
+                onSelected: (_) => setState(() => _selectedLanguage = 'tr'),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: ChoiceChip(
+                label: const Text('العربية'),
+                selected: _selectedLanguage == 'ar',
+                onSelected: (_) => setState(() => _selectedLanguage = 'ar'),
+              ),
+            ),
+          ],
         ),
       ],
     );

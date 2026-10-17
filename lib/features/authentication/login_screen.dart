@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/app_constants.dart';
 import '../../core/services/academic_service.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/storage_service.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_typography.dart';
 import '../../core/widgets/app_button.dart';
 import '../../core/widgets/app_text_field.dart';
 import '../dashboard/dashboard_shell.dart';
@@ -29,8 +27,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController(text: 'mohamed.abdou@ikcu.edu.tr');
-  final _passwordController = TextEditingController(text: 'student123');
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
   bool _isLoading = false;
@@ -58,9 +56,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (!mounted) return;
 
-    setState(() => _isLoading = false);
-
     if (success) {
+      final uid = widget.authService.currentUserId;
+      if (uid != null) {
+        await widget.academicService.loadUserData(uid);
+      }
+
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+
       final profile = widget.academicService.profile;
       if (profile.isOnboardingCompleted) {
         Navigator.of(context).pushReplacement(
@@ -68,6 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
             builder: (_) => DashboardShell(
               academicService: widget.academicService,
               storage: widget.storage,
+              authService: widget.authService,
             ),
           ),
         );
@@ -77,12 +82,14 @@ class _LoginScreenState extends State<LoginScreen> {
             builder: (_) => AcademicOnboardingScreen(
               academicService: widget.academicService,
               storage: widget.storage,
+              authService: widget.authService,
             ),
           ),
         );
       }
     } else {
       setState(() {
+        _isLoading = false;
         _errorMessage = 'Invalid email or password. Please try again.';
       });
     }
@@ -102,53 +109,27 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // App Icon & Brand
+                  // App Brand Logo (Authentic UNiFocus rectangular logo & tagline)
                   Center(
-                    child: Container(
-                      width: 68,
-                      height: 68,
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryNavy,
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.school_rounded,
-                          size: 36,
-                          color: Colors.white,
-                        ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Image.asset(
+                        'assets/images/unifocus_logo.png',
+                        width: 220,
+                        fit: BoxFit.contain,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  Center(
-                    child: Text(
-                      AppConstants.appName,
-                      style: AppTypography.displayLarge.copyWith(
-                        color: AppColors.primaryNavy,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Center(
-                    child: Text(
-                      'Sign in to your academic account',
-                      style: AppTypography.bodyMedium.copyWith(
-                        color: AppColors.textSecondaryLight,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
 
                   if (_errorMessage != null) ...[
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppColors.errorRose.withOpacity(0.08),
+                        color: AppColors.errorRose.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: AppColors.errorRose.withOpacity(0.3)),
+                        border: Border.all(color: AppColors.errorRose.withValues(alpha: 0.3)),
                       ),
                       child: Text(
                         _errorMessage!,
@@ -202,10 +183,23 @@ class _LoginScreenState extends State<LoginScreen> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: () {
+                      onPressed: () async {
+                        final email = _emailController.text.trim();
+                        if (email.isEmpty || !email.contains('@')) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please enter your university email above first.'),
+                            ),
+                          );
+                          return;
+                        }
+                        final sent = await widget.authService.resetPassword(email);
+                        if (!mounted || !context.mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Password reset instructions sent to your email.'),
+                          SnackBar(
+                            content: Text(sent
+                                ? 'Password reset instructions sent to $email.'
+                                : 'Failed to send reset email. Check address and try again.'),
                           ),
                         );
                       },

@@ -125,7 +125,7 @@ class _TasksScreenState extends State<TasksScreen> {
                             style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.primaryNavy),
                           ),
                           Text(
-                            'Break down your CENG401 Proposal into 2 Pomodoro sprints today to avoid deadline stress.',
+                            'Break down large academic assignments into 25-minute Pomodoro focus sprints to avoid deadline stress.',
                             style: TextStyle(fontSize: 11.5, color: AppColors.textSecondaryLight),
                           ),
                         ],

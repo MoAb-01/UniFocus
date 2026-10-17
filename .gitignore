@@ -46,3 +46,10 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Environment files and backend dependencies
+*.env
+*.env.*
+!*.env.example
+node_modules/
+functions/node_modules/

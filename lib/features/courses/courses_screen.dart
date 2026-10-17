@@ -53,6 +53,11 @@ class _CoursesScreenState extends State<CoursesScreen> {
         title: const Text('Courses & Academics'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.calendar_month_outlined),
+            tooltip: 'Add Semester',
+            onPressed: () => _showAddSemesterDialog(context),
+          ),
+          IconButton(
             icon: const Icon(Icons.add),
             tooltip: 'Add Course',
             onPressed: () => _openAddCourseModal(context),
@@ -183,6 +188,86 @@ class _CoursesScreenState extends State<CoursesScreen> {
       MaterialPageRoute(
         builder: (_) => AddEditCourseScreen(
           academicService: widget.academicService,
+        ),
+      ),
+    );
+  }
+
+  void _showAddSemesterDialog(BuildContext context) {
+    final yearController = TextEditingController(text: '2026–2027');
+    String selectedTerm = 'Fall';
+    bool isCurrent = true;
+    final progId = widget.academicService.selectedProgramId ??
+        (widget.academicService.programs.isNotEmpty ? widget.academicService.programs.first.id : 'main_prog');
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDlgState) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: const Text('Add New Semester', style: TextStyle(fontWeight: FontWeight.w900)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Academic Year', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 6),
+              TextField(
+                controller: yearController,
+                decoration: InputDecoration(
+                  hintText: 'e.g. 2026–2027',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+              ),
+              const SizedBox(height: 14),
+              const Text('Term / Dönem', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 6),
+              DropdownButtonFormField<String>(
+                value: selectedTerm,
+                decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
+                items: const [
+                  DropdownMenuItem(value: 'Fall', child: Text('Fall (Güz)')),
+                  DropdownMenuItem(value: 'Spring', child: Text('Spring (Bahar)')),
+                  DropdownMenuItem(value: 'Summer', child: Text('Summer (Yaz)')),
+                ],
+                onChanged: (val) {
+                  if (val != null) setDlgState(() => selectedTerm = val);
+                },
+              ),
+              const SizedBox(height: 12),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Active Current Semester', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                value: isCurrent,
+                onChanged: (val) => setDlgState(() => isCurrent = val),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.brandBlue,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              onPressed: () {
+                final year = yearController.text.trim();
+                if (year.isNotEmpty) {
+                  widget.academicService.addSemester(
+                    academicYear: year,
+                    term: selectedTerm,
+                    programId: progId,
+                    isCurrent: isCurrent,
+                  );
+                  Navigator.pop(ctx);
+                }
+              },
+              child: const Text('Create', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+          ],
         ),
       ),
     );

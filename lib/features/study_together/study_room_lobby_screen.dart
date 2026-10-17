@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../core/models/study_room.dart';
 import '../../core/services/study_together_service.dart';
 import '../../core/services/academic_service.dart';
 import '../../core/theme/app_colors.dart';
@@ -25,50 +26,131 @@ class StudyRoomLobbyScreen extends StatefulWidget {
 }
 
 class _StudyRoomLobbyScreenState extends State<StudyRoomLobbyScreen> {
-  int? _countdownSeconds;
+  String? _countdownText;
+  DateTime? _activeCountdownStart;
   Timer? _countdownTimer;
+  bool _hasNavigatedToActive = false;
+  bool _isStartingSession = false;
 
   @override
   void initState() {
     super.initState();
     widget.studyService.addListener(_onServiceChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _onServiceChanged();
+    });
   }
 
   @override
   void dispose() {
     widget.studyService.removeListener(_onServiceChanged);
     _countdownTimer?.cancel();
+    _countdownTimer = null;
     super.dispose();
   }
 
   void _onServiceChanged() {
-    if (mounted) setState(() {});
+    if (!mounted) return;
+    final room = widget.studyService.activeRoom;
+    if (room == null) return;
+
+    if (room.status == StudyRoomStatus.ended) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('The host has ended or cancelled the room.'),
+          backgroundColor: AppColors.dangerRed,
+        ),
+      );
+      Navigator.pop(context);
+      return;
+    }
+
+    if (room.status == StudyRoomStatus.active) {
+      final start = room.countdownStartedAt ??
+          room.sessionStartedAt?.subtract(const Duration(seconds: 3));
+      if (start != null) {
+        _syncCountdown(start, room.sessionStartedAt);
+      } else {
+        _navigateToActiveSession();
+      }
+      return;
+    }
+    setState(() {});
   }
 
-  void _startCountdown() {
-    setState(() => _countdownSeconds = 3);
-    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+  void _syncCountdown(DateTime countdownStart, DateTime? sessionStart) {
+    if (_hasNavigatedToActive) return;
+
+    // Prevent duplicate countdown starts if multiple room updates arrive for the same start
+    if (_activeCountdownStart != null &&
+        countdownStart.difference(_activeCountdownStart!).inSeconds.abs() < 2) {
+      _activeCountdownStart = countdownStart;
+      return;
+    }
+
+    _activeCountdownStart = countdownStart;
+    _countdownTimer?.cancel();
+    _countdownTimer = null;
+
+    // Update immediately on state reception
+    _updateCountdownStep();
+
+    // Derive countdown progression locally from shared server timestamp
+    _countdownTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
       if (!mounted) {
         timer.cancel();
         return;
       }
-      if (_countdownSeconds! <= 1) {
-        timer.cancel();
-        setState(() => _countdownSeconds = null);
-        widget.studyService.startSession();
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ActiveStudySessionScreen(
-              studyService: widget.studyService,
-              academicService: widget.academicService,
-            ),
-          ),
-        );
-      } else {
-        setState(() => _countdownSeconds = _countdownSeconds! - 1);
-      }
+      _updateCountdownStep();
     });
+  }
+
+  void _updateCountdownStep() {
+    if (!mounted || _hasNavigatedToActive || _activeCountdownStart == null) return;
+
+    final now = DateTime.now();
+    final elapsedMs = now.difference(_activeCountdownStart!).inMilliseconds;
+
+    // Total countdown duration: 3800ms (3 -> 2 -> 1 -> START -> Active)
+    if (elapsedMs >= 3800) {
+      _countdownTimer?.cancel();
+      _countdownTimer = null;
+      _navigateToActiveSession();
+      return;
+    }
+
+    final String nextText;
+    if (elapsedMs < 1000) {
+      nextText = '3';
+    } else if (elapsedMs < 2000) {
+      nextText = '2';
+    } else if (elapsedMs < 3000) {
+      nextText = '1';
+    } else {
+      nextText = 'START';
+    }
+
+    if (_countdownText != nextText) {
+      setState(() {
+        _countdownText = nextText;
+      });
+    }
+  }
+
+  void _navigateToActiveSession() {
+    if (_hasNavigatedToActive) return;
+    _hasNavigatedToActive = true;
+    _countdownTimer?.cancel();
+    _countdownTimer = null;
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ActiveStudySessionScreen(
+          studyService: widget.studyService,
+          academicService: widget.academicService,
+        ),
+      ),
+    );
   }
 
   void _copyRoomCode(String code) {
@@ -296,11 +378,15 @@ class _StudyRoomLobbyScreenState extends State<StudyRoomLobbyScreen> {
                                 children: [
                                   Row(
                                     children: [
-                                      Text(
-                                        p.displayName,
-                                        style: AppTypography.body.copyWith(
-                                          fontWeight: FontWeight.w800,
-                                          color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                                      Flexible(
+                                        child: Text(
+                                          p.displayName,
+                                          style: AppTypography.body.copyWith(
+                                            fontWeight: FontWeight.w800,
+                                            color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
                                       if (p.isHost) ...[
@@ -350,7 +436,15 @@ class _StudyRoomLobbyScreenState extends State<StudyRoomLobbyScreen> {
                     text: 'START TOGETHER',
                     variant: GameButtonVariant.success,
                     height: 58,
-                    onPressed: _startCountdown,
+                    isLoading: _isStartingSession,
+                    onPressed: _isStartingSession
+                        ? null
+                        : () {
+                            setState(() {
+                              _isStartingSession = true;
+                            });
+                            widget.studyService.startSession();
+                          },
                   ),
                   const SizedBox(height: 12),
                   GameButton(
@@ -409,8 +503,8 @@ class _StudyRoomLobbyScreenState extends State<StudyRoomLobbyScreen> {
             ),
           ),
 
-          // 3-2-1 Countdown Overlay
-          if (_countdownSeconds != null)
+          // 3-2-1-START Countdown Overlay
+          if (_countdownText != null)
             Container(
               color: Colors.black.withValues(alpha: 0.85),
               child: Center(
@@ -418,19 +512,29 @@ class _StudyRoomLobbyScreenState extends State<StudyRoomLobbyScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'STARTING IN',
+                      _countdownText == 'START' ? 'SESSION BEGINS' : 'STARTING IN',
                       style: AppTypography.label.copyWith(
                         color: Colors.white70,
                         fontSize: 18,
                         letterSpacing: 3.0,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 12),
-                    Text(
-                      '$_countdownSeconds',
-                      style: AppTypography.hero.copyWith(
-                        fontSize: 120,
-                        color: AppColors.gamifyEmerald,
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                        child: Text(
+                          _countdownText!,
+                          style: AppTypography.hero.copyWith(
+                            fontSize: _countdownText == 'START' ? 84 : 120,
+                            color: _countdownText == 'START'
+                                ? AppColors.gamifyYellow
+                                : AppColors.gamifyEmerald,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
                       ),
                     ),
                   ],

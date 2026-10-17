@@ -1,7 +1,7 @@
 name: unifocus
 description: "UniFocus - Academic productivity and organization companion for university students in Türkiye"
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -9,9 +9,20 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   cupertino_icons: ^1.0.6
   shared_preferences: ^2.2.2
-  intl: ^0.19.0
+  intl: ^0.20.3
+  audioplayers: ^6.1.0
+  firebase_core: ^4.15.0
+  firebase_auth: ^6.7.0
+  cloud_firestore: ^6.10.0
+  firebase_storage: ^13.6.0
+  livekit_client: ^2.13.0
+  http: ^1.6.0
+  flutter_local_notifications: ^18.0.0
+  device_preview: ^1.2.0
 
 dev_dependencies:
   flutter_test:
@@ -20,3 +31,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/audio/
+    - assets/images/
+

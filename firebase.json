@@ -1,0 +1,38 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "unifocus-app",
+          "appId": "1:67992158660:android:20391caffd106d713c6491",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "unifocus-app",
+          "configurations": {
+            "android": "1:67992158660:android:20391caffd106d713c6491",
+            "ios": "1:67992158660:ios:4bd31c4f5449a0e33c6491",
+            "macos": "1:67992158660:ios:4bd31c4f5449a0e33c6491",
+            "web": "1:67992158660:web:4ba5898fea9472ed3c6491",
+            "windows": "1:67992158660:web:dc929e22f06d5e1e3c6491"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ]
+}

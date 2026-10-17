@@ -125,7 +125,9 @@ class PomodoroTimerWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    isRunning ? 'In session' : 'Paused',
+                    isRunning
+                        ? 'In session'
+                        : (remainingSeconds == totalSeconds ? 'Ready to focus' : 'Paused'),
                     style: AppTypography.bodySmall.copyWith(
                       color: AppColors.textMutedLight,
                       fontWeight: FontWeight.w500,

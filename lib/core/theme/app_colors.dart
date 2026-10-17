@@ -5,11 +5,28 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
+  // UniFocus Brand Primaries (Focus Orange & Warm White)
+  static const Color brandOrange = Color(0xFFF97316); // Signature Focus Orange
+  static const Color brandOrangeDark = Color(0xFFEA580C); // Bevel / active
+  static const Color brandOrangeLight = Color(0xFFFFF7ED); // Soft orange tint
+  static const Color brandOrangeGlow = Color(0xFFFB923C); // Ambient glow
+
   // Vibrant Brand Primaries (Bright Blue)
   static const Color brandBlue = Color(0xFF2563EB); // Electric Royal Blue
   static const Color brandBlueDark = Color(0xFF1D4ED8); // Bevel/shadow for 3D buttons
   static const Color brandBlueLight = Color(0xFFEFF6FF); // Soft blue tint
   static const Color brandCyan = Color(0xFF06B6D4); // Electric Cyan highlight
+
+  // Isometric Room Environment Tones
+  static const Color roomFloorLight = Color(0xFFEFE7DC);
+  static const Color roomFloorDark = Color(0xFF1D2230);
+  static const Color roomWallLight = Color(0xFFFAF8F5);
+  static const Color roomWallDark = Color(0xFF161A26);
+  static const Color roomWallAccentLight = Color(0xFFF3EEE6);
+  static const Color roomWallAccentDark = Color(0xFF202637);
+  static const Color roomDeskLight = Color(0xFFE4D5BF);
+  static const Color roomDeskDark = Color(0xFF2C241D);
+  static const Color roomChairDark = Color(0xFF334155);
 
   // Gamification Accents (Purple, Emerald, Orange, Amber, Red)
   static const Color gamifyPurple = Color(0xFF8B5CF6); // XP & Level Badges

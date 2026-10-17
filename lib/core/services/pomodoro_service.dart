@@ -64,7 +64,9 @@ class PomodoroService extends ChangeNotifier {
   void setDurations({required int workMinutes, required int breakMinutes}) {
     _workMinutes = workMinutes;
     _breakMinutes = breakMinutes;
-    if (_state == PomodoroState.idle) {
+    if (_state == PomodoroState.idle || _state == PomodoroState.paused) {
+      _timer?.cancel();
+      _state = PomodoroState.idle;
       _remainingSeconds = _workMinutes * 60;
     }
     notifyListeners();

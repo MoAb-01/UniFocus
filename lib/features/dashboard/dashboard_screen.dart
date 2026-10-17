@@ -95,7 +95,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'İzmir Kâtip Çelebi University • Senior',
+                          '${profile.university} • ${profile.academicYearEnum.displayName}',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -209,27 +209,37 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               textBaseline: TextBaseline.alphabetic,
                               children: [
                                 Text(
-                                  profile.currentGano.toStringAsFixed(2),
-                                  style: const TextStyle(
-                                    fontSize: 32,
+                                  profile.displayGpa,
+                                  style: TextStyle(
+                                    fontSize: profile.displayGpa == 'GPA NOT SET' ? 22 : 32,
                                     fontWeight: FontWeight.w900,
                                     color: Colors.white,
                                   ),
                                 ),
-                                const SizedBox(width: 8),
-                                const Text(
-                                  '↑ +0.18',
-                                  style: TextStyle(
-                                    color: Color(0xFF86EFAC),
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 13,
+                                if (profile.previousGpa != null &&
+                                    profile.currentGano > 0 &&
+                                    (profile.currentGano - profile.previousGpa!).abs() >= 0.01) ...[
+                                  const SizedBox(width: 8),
+                                  Builder(
+                                    builder: (_) {
+                                      final diff = profile.currentGano - profile.previousGpa!;
+                                      final isUp = diff > 0;
+                                      return Text(
+                                        '${isUp ? '↑ +' : '↓ '}${diff.toStringAsFixed(2)}',
+                                        style: TextStyle(
+                                          color: isUp ? const Color(0xFF86EFAC) : const Color(0xFFFCA5A5),
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 13,
+                                        ),
+                                      );
+                                    },
                                   ),
-                                ),
+                                ],
                               ],
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              '${profile.completedAkts} Completed AKTS • 2026–2027 Fall',
+                              '${profile.completedAkts} Completed AKTS • ${profile.currentSemester ?? 'Academic Year'}',
                               style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500),
                             ),
                           ],
@@ -259,56 +269,107 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
+                Builder(
+                  builder: (context) {
+                    final pendingTasks = widget.academicService.tasks.where((t) => !t.isCompleted).toList();
+                    final priorityTask = pendingTasks.isNotEmpty ? pendingTasks.first : null;
+
+                    if (priorityTask == null) {
+                      return Container(
+                        padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFEFF6FF),
-                          borderRadius: BorderRadius.circular(16),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
                         ),
-                        child: const Icon(Icons.menu_book_rounded, color: AppColors.brandBlue, size: 28),
-                      ),
-                      const SizedBox(width: 14),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
                           children: [
-                            Text(
-                              'CENG401 • Senior Thesis',
-                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.brandBlue),
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF1F5F9),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: const Icon(Icons.check_circle_outline_rounded, color: Color(0xFF64748B), size: 28),
                             ),
-                            SizedBox(height: 2),
-                            Text(
-                              'Project Proposal',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: AppColors.textPrimaryLight),
+                            const SizedBox(width: 14),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'No Focus Tasks Pending',
+                                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.textPrimaryLight),
+                                  ),
+                                  SizedBox(height: 2),
+                                  Text(
+                                    'Add an academic task to schedule focused study sprints.',
+                                    style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                                  ),
+                                ],
+                              ),
                             ),
-                            SizedBox(height: 2),
-                            Text(
-                              '⏱ 50 min recommended focus',
-                              style: TextStyle(fontSize: 12, color: Color(0xFF64748B), fontWeight: FontWeight.w600),
+                            TextButton(
+                              onPressed: () => widget.onNavigateTab?.call(1),
+                              child: const Text('ADD TASK', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
                             ),
                           ],
                         ),
+                      );
+                    }
+
+                    return Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
                       ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.brandBlue,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                        ),
-                        onPressed: () => widget.onNavigateTab?.call(2), // Focus tab
-                        child: const Text('FOCUS', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13)),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEFF6FF),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: const Icon(Icons.menu_book_rounded, color: AppColors.brandBlue, size: 28),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  priorityTask.courseCode.isNotEmpty ? priorityTask.courseCode : 'Academic Goal',
+                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.brandBlue),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  priorityTask.title,
+                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: AppColors.textPrimaryLight),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '${priorityTask.estimatedMinutes > 0 ? priorityTask.estimatedMinutes : 25} min recommended focus',
+                                  style: const TextStyle(fontSize: 12, color: Color(0xFF64748B), fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.brandBlue,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            ),
+                            onPressed: () => widget.onNavigateTab?.call(2), // Focus tab
+                            child: const Text('FOCUS', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13)),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 20),
 
@@ -323,46 +384,81 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.local_fire_department_rounded, color: AppColors.streakOrange, size: 26),
-                      const SizedBox(width: 12),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                Builder(
+                  builder: (context) {
+                    final upcomingTasks = widget.academicService.tasks.where((t) => !t.isCompleted).toList();
+                    final upcoming = upcomingTasks.length > 1 ? upcomingTasks[1] : (upcomingTasks.isNotEmpty ? upcomingTasks.first : null);
+
+                    if (upcoming == null) {
+                      return Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                        ),
+                        child: const Row(
                           children: [
-                            Text(
-                              'Project Proposal Document',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.textPrimaryLight),
-                            ),
-                            SizedBox(height: 2),
-                            Text(
-                              '3 days left • High Priority • 4h estimated',
-                              style: TextStyle(fontSize: 12, color: AppColors.dangerRed, fontWeight: FontWeight.w700),
+                            Icon(Icons.event_available_rounded, color: AppColors.brandBlue, size: 24),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'No upcoming deadlines. Your academic schedule is clear!',
+                                style: TextStyle(fontSize: 13, color: Color(0xFF64748B), fontWeight: FontWeight.w600),
+                              ),
                             ),
                           ],
                         ),
+                      );
+                    }
+
+                    return Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: const Color(0xFFE2E8F0)),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFEE2E2),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Text(
-                          'URGENT',
-                          style: TextStyle(color: AppColors.dangerRed, fontWeight: FontWeight.w900, fontSize: 11),
-                        ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.local_fire_department_rounded, color: AppColors.streakOrange, size: 26),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  upcoming.title,
+                                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.textPrimaryLight),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  upcoming.priority.toLowerCase() == 'high' ? 'High Priority • Academic Deadline' : 'Scheduled Academic Task',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: upcoming.priority.toLowerCase() == 'high' ? AppColors.dangerRed : const Color(0xFF64748B),
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (upcoming.priority.toLowerCase() == 'high')
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFEE2E2),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Text(
+                                'URGENT',
+                                style: TextStyle(color: AppColors.dangerRed, fontWeight: FontWeight.w900, fontSize: 11),
+                              ),
+                            ),
+                        ],
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 20),
 
@@ -384,38 +480,55 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Builder(
+                    builder: (context) {
+                      final today = DateTime.now();
+                      final todaySessions = widget.academicService.sessions.where((s) =>
+                          s.timestamp.year == today.year &&
+                          s.timestamp.month == today.month &&
+                          s.timestamp.day == today.day).length;
+                      const targetSessions = 4;
+                      final progressRatio = (todaySessions / targetSessions).clamp(0.0, 1.0);
+                      final percent = (progressRatio * 100).toInt();
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            '2 / 4 Focus Sessions',
-                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AppColors.textPrimaryLight),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '$todaySessions / $targetSessions Focus Sessions',
+                                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AppColors.textPrimaryLight),
+                              ),
+                              Text(
+                                '$percent%',
+                                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.gamifyEmeraldDark),
+                              ),
+                            ],
                           ),
+                          const SizedBox(height: 10),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: LinearProgressIndicator(
+                              value: progressRatio,
+                              minHeight: 10,
+                              backgroundColor: const Color(0xFFF1F5F9),
+                              valueColor: const AlwaysStoppedAnimation(AppColors.gamifyEmerald),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
                           Text(
-                            '50%',
-                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.gamifyEmeraldDark),
+                            todaySessions >= targetSessions
+                                ? 'Daily goal reached! Great academic consistency.'
+                                : (todaySessions == 0
+                                    ? 'Start your first 25-minute study sprint today to build your streak!'
+                                    : 'Keep it going! ${targetSessions - todaySessions} more sessions to reach your daily goal.'),
+                            style: const TextStyle(fontSize: 12, color: Color(0xFF64748B), fontWeight: FontWeight.w500),
                           ),
                         ],
-                      ),
-                      const SizedBox(height: 10),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: const LinearProgressIndicator(
-                          value: 0.5,
-                          minHeight: 10,
-                          backgroundColor: Color(0xFFF1F5F9),
-                          valueColor: AlwaysStoppedAnimation(AppColors.gamifyEmerald),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Keep it going! 2 more sessions to hit your daily goal (+30 XP bonus).',
-                        style: TextStyle(fontSize: 12, color: Color(0xFF64748B), fontWeight: FontWeight.w500),
-                      ),
-                    ],
+                      );
+                    },
                   ),
                 ),
                 const SizedBox(height: 24),

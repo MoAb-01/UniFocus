@@ -25,10 +25,20 @@ class StudyTogetherEntryScreen extends StatefulWidget {
 }
 
 class _StudyTogetherEntryScreenState extends State<StudyTogetherEntryScreen> {
-  final TextEditingController _codeController = TextEditingController(text: '482-731-205');
-  final TextEditingController _titleController = TextEditingController(text: 'CENG401 Focus Session');
-  String _selectedCourse = 'CENG401';
+  final TextEditingController _codeController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController(text: 'Group Focus Session');
+  String _selectedCourse = 'General Study';
   bool _isJoining = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final courses = widget.academicService.activeCourses;
+    if (courses.isNotEmpty) {
+      _selectedCourse = courses.first.code;
+      _titleController.text = '${courses.first.code} Focus Session';
+    }
+  }
 
   @override
   void dispose() {
@@ -141,7 +151,7 @@ class _StudyTogetherEntryScreenState extends State<StudyTogetherEntryScreen> {
             TextField(
               controller: _titleController,
               decoration: InputDecoration(
-                hintText: 'e.g. CENG401 Project Sprint',
+                hintText: 'e.g. Calculus Midterm Prep',
                 border: OutlineInputBorder(
                   borderRadius: AppRadii.roundedMd,
                 ),
@@ -156,17 +166,20 @@ class _StudyTogetherEntryScreenState extends State<StudyTogetherEntryScreen> {
             ),
             const SizedBox(height: 6),
             DropdownButtonFormField<String>(
-              initialValue: _selectedCourse,
+              value: widget.academicService.activeCourses.any((c) => c.code == _selectedCourse) || _selectedCourse == 'General Study'
+                  ? _selectedCourse
+                  : 'General Study',
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: AppRadii.roundedMd,
                 ),
               ),
-              items: const [
-                DropdownMenuItem(value: 'CENG401', child: Text('CENG401 — Senior Thesis')),
-                DropdownMenuItem(value: 'CENG403', child: Text('CENG403 — Cloud Computing')),
-                DropdownMenuItem(value: 'MATH201', child: Text('MATH201 — Linear Algebra')),
-                DropdownMenuItem(value: 'General Study', child: Text('General Focus Arena')),
+              items: [
+                ...widget.academicService.activeCourses.map((c) => DropdownMenuItem(
+                  value: c.code,
+                  child: Text('${c.code} — ${c.name}', overflow: TextOverflow.ellipsis),
+                )),
+                const DropdownMenuItem(value: 'General Study', child: Text('General Focus Arena')),
               ],
               onChanged: (val) {
                 if (val != null) setState(() => _selectedCourse = val);
@@ -234,7 +247,7 @@ class _StudyTogetherEntryScreenState extends State<StudyTogetherEntryScreen> {
             // Top Hero Banner
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(22),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft,
@@ -258,29 +271,36 @@ class _StudyTogetherEntryScreenState extends State<StudyTogetherEntryScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          borderRadius: AppRadii.roundedPill,
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.groups_rounded, size: 14, color: Colors.white),
-                            const SizedBox(width: 5),
-                            Text(
-                              'MULTIPLAYER ARENA',
-                              style: AppTypography.label.copyWith(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w900,
+                      Flexible(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: AppRadii.roundedPill,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.groups_rounded, size: 14, color: Colors.white),
+                              const SizedBox(width: 5),
+                              Flexible(
+                                child: Text(
+                                  'MULTIPLAYER ARENA',
+                                  style: AppTypography.label.copyWith(
+                                    color: Colors.white,
+                                    fontSize: 9.5,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                      const Spacer(),
+                      const SizedBox(width: 6),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
@@ -320,7 +340,6 @@ class _StudyTogetherEntryScreenState extends State<StudyTogetherEntryScreen> {
             ),
             const SizedBox(height: 20),
 
-            // Active Room Quick Launch (if any)
             if (hasActiveRoom) ...[
               Container(
                 padding: const EdgeInsets.all(18),
@@ -408,6 +427,47 @@ class _StudyTogetherEntryScreenState extends State<StudyTogetherEntryScreen> {
                           : 'ENTER LOBBY',
                       variant: GameButtonVariant.success,
                       onPressed: _openActiveRoom,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ] else ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.surfaceDark : Colors.white,
+                  borderRadius: AppRadii.roundedLg,
+                  border: Border.all(
+                    color: isDark ? AppColors.borderDark : const Color(0xFFE2E8F0),
+                    width: 1.5,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.meeting_room_outlined,
+                      size: 40,
+                      color: AppColors.textSecondaryLight,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'NO ACTIVE ROOMS',
+                      style: AppTypography.headline.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.0,
+                        color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'You are not currently in an arena. Host a new arena or join with an invite code.',
+                      textAlign: TextAlign.center,
+                      style: AppTypography.bodySmall.copyWith(
+                        color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                      ),
                     ),
                   ],
                 ),
@@ -526,7 +586,7 @@ class _StudyTogetherEntryScreenState extends State<StudyTogetherEntryScreen> {
                               ),
                             ),
                             Text(
-                              'Enter a 9-digit code (e.g. 482-731-205)',
+                              'Enter a 9-digit code (e.g. 123-456-789)',
                               style: AppTypography.bodySmall.copyWith(
                                 color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
                               ),
@@ -539,6 +599,8 @@ class _StudyTogetherEntryScreenState extends State<StudyTogetherEntryScreen> {
                   const SizedBox(height: 16),
                   TextField(
                     controller: _codeController,
+                    textInputAction: TextInputAction.go,
+                    onSubmitted: (_) => _handleJoin(),
                     textAlign: TextAlign.center,
                     style: AppTypography.headline.copyWith(
                       fontSize: 22,

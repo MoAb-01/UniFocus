@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "67992158660",
+    "project_id": "unifocus-app",
+    "storage_bucket": "unifocus-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:67992158660:android:20391caffd106d713c6491",
+        "android_client_info": {
+          "package_name": "com.unifocus.unifocus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9m9Xb7vS6P0HluRXuG43pU_yqZWeYFbI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

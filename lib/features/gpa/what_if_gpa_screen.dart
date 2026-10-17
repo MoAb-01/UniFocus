@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_constants.dart';
-import '../../core/models/course.dart';
 import '../../core/services/academic_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
@@ -67,8 +66,8 @@ class _WhatIfGpaScreenState extends State<WhatIfGpaScreen> with SingleTickerProv
     final remainingAkts = int.tryParse(_remainingAktsController.text.trim()) ?? 30;
     final currentProg = widget.academicService.currentProgram;
 
-    final currentGano = currentProg?.gano ?? 3.42;
-    final completedAkts = currentProg?.completedAkts ?? 120;
+    final currentGano = currentProg?.gano ?? 0.0;
+    final completedAkts = currentProg?.completedAkts ?? 0;
 
     final res = GradeCalculator.calculateRequiredGpaForTarget(
       currentGano: currentGano,
@@ -266,8 +265,16 @@ class _WhatIfGpaScreenState extends State<WhatIfGpaScreen> with SingleTickerProv
                     const Text('Current GANO', style: TextStyle(fontSize: 12, color: AppColors.textSecondaryLight)),
                     const SizedBox(height: 4),
                     Text(
-                      currentGano.toStringAsFixed(2),
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.primaryNavy),
+                      currentGano > 0
+                          ? currentGano.toStringAsFixed(2)
+                          : (widget.academicService.profile.previousGpa != null
+                              ? widget.academicService.profile.previousGpa!.toStringAsFixed(2)
+                              : 'GPA NOT SET'),
+                      style: TextStyle(
+                        fontSize: (currentGano == 0 && widget.academicService.profile.previousGpa == null) ? 16 : 22,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.primaryNavy,
+                      ),
                     ),
                   ],
                 ),

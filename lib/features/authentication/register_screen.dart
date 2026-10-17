@@ -71,8 +71,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (success) {
       // Update profile name
       final currentProfile = widget.academicService.profile;
+      final uid = widget.authService.currentUserId;
       widget.academicService.updateProfile(
         currentProfile.copyWith(
+          id: uid ?? currentProfile.id,
           name: _nameController.text.trim(),
           email: _emailController.text.trim(),
           isOnboardingCompleted: false,
@@ -85,6 +87,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           builder: (_) => AcademicOnboardingScreen(
             academicService: widget.academicService,
             storage: widget.storage,
+            authService: widget.authService,
           ),
         ),
       );

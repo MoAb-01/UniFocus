@@ -1,0 +1,103 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null && request.auth.uid != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // -------------------------------------------------------------------------
+    // Users Profile Collection
+    // users/{uid}
+    // -------------------------------------------------------------------------
+    match /users/{userId} {
+      // Anyone authenticated can read basic public profile info (name, major, level, avatar)
+      allow read: if isAuthenticated();
+      // Only the user themselves can write their own profile
+      allow write: if isOwner(userId);
+
+      // -----------------------------------------------------------------------
+      // User Settings Subcollection (Strictly private)
+      // users/{uid}/settings/{settingId}
+      // -----------------------------------------------------------------------
+      match /settings/{settingId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // -----------------------------------------------------------------------
+      // Academic Semesters & Courses Subcollections (Private academic data)
+      // users/{uid}/semesters/{semesterId}
+      // users/{uid}/semesters/{semesterId}/courses/{courseId}
+      // -----------------------------------------------------------------------
+      match /semesters/{semesterId} {
+        allow read, write: if isOwner(userId);
+
+        match /courses/{courseId} {
+          allow read, write: if isOwner(userId);
+        }
+      }
+
+      // -----------------------------------------------------------------------
+      // Study Sessions History (Private session data)
+      // users/{uid}/sessions/{sessionId}
+      // -----------------------------------------------------------------------
+      match /sessions/{sessionId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Study Together Rooms Collection
+    // rooms/{roomId}
+    // -------------------------------------------------------------------------
+    match /rooms/{roomId} {
+      // Any authenticated user can read room details to join or check status
+      allow read: if isAuthenticated();
+
+      // Creating a room: Authenticated user must set themselves as host
+      allow create: if isAuthenticated() &&
+                    request.resource.data.hostId == request.auth.uid &&
+                    request.resource.data.maxParticipants <= 6;
+
+      // Updating a room:
+      // - Host can update room status, timestamps, and music state
+      // - Any member can update break proposals or mini-game state
+      allow update: if isAuthenticated();
+
+      // Deleting a room: Host only
+      allow delete: if isAuthenticated() &&
+                    resource.data.hostId == request.auth.uid;
+
+      // -----------------------------------------------------------------------
+      // Room Members Subcollection
+      // rooms/{roomId}/members/{memberUid}
+      // -----------------------------------------------------------------------
+      match /members/{memberUid} {
+        // Any member in the room can see other connected participants
+        allow read: if isAuthenticated();
+
+        // User can only create or modify their own participant entry
+        allow create, update: if isAuthenticated() &&
+                              request.auth.uid == memberUid;
+
+        // User can remove themselves, or host can remove participant
+        allow delete: if isAuthenticated() &&
+                      (request.auth.uid == memberUid ||
+                       get(/databases/$(database)/documents/rooms/$(roomId)).data.hostId == request.auth.uid);
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Universities Directory Collection (Read-only reference data)
+    // -------------------------------------------------------------------------
+    match /universities/{uniId} {
+      allow read: if true;
+      allow write: if false; // administrative only
+    }
+  }
+}
