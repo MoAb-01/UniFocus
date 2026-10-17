@@ -12,7 +12,7 @@ Choose your academic year, select the classes you take and select your school. P
 
 ### For y'all: Let's be more Social:
 
-###The app provides synchronized studying enviroment of  2.5D physical study office where you can invite your friends study together, play minigames, and having fun!
+#### The app provides synchronized studying enviroment of  2.5D physical study office where you can invite your friends study together, play minigames, and having fun!
 ---
 
 ## Architecture & Technology Stack
