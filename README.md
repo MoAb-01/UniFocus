@@ -5,7 +5,7 @@
   </p>
 
   <p align="center">
-    <img src="assets/images/unifocus_app_icon.png" alt="UniFocus Icon" width="128" style="border-radius: 28px;" />
+    <img src="assets/images/unifocus_logo_white.png" alt="UniFocus Logo" width="220" style="border-radius: 14px;" />
   </p>
 
   # UniFocus
