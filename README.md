@@ -1,6 +1,45 @@
-# UniFocus — Academic Productivity and Social App
+<div align="center">
 
-UniFocus is an academic productivity, course organization, and multiplayer focus application engineered for students from different academic backgrounds. It combines the necessary tools for school or university students.
+  <p align="center">
+    <b>UNIFOCUS</b>
+  </p>
+
+  <p align="center">
+    <img src="assets/images/unifocus_app_icon.png" alt="UniFocus Icon" width="128" style="border-radius: 28px;" />
+  </p>
+
+  # UniFocus
+
+  **The academic productivity workbench; a modern, open-source focus companion and multiplayer study arena built in Flutter.**<br>
+  Track cumulative GANO & AKTS, conquer Pomodoro sprints, manage course milestones, and study together in synchronized 2.5D virtual rooms.<br>
+  <sub><b>Android · iOS · Web · macOS · Windows · Linux</b></sub>
+
+  <br>
+
+  <p align="center">
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License" /></a>
+    <a href="https://flutter.dev"><img src="https://img.shields.io/badge/written%20in-Flutter%20%7C%20Dart-02569B?style=flat-square&logo=flutter&logoColor=white" alt="Written in Flutter" /></a>
+    <img src="https://img.shields.io/badge/runs%20on-Android%20%C2%B7%20iOS%20%C2%B7%20Web%20%C2%B7%20macOS%20%C2%B7%20Windows-4CAF50?style=flat-square" alt="Supported Platforms" />
+    <img src="https://img.shields.io/badge/security-Dual--Token%20Auth-00897B?style=flat-square" alt="Dual-Token Auth" />
+  </p>
+
+  <p align="center">
+    <a href="https://firebase.google.com"><img src="https://img.shields.io/badge/realtime%20sync-Google%20Firebase-FFCA28?style=flat-square&logo=firebase&logoColor=black" alt="Firebase Sync" /></a>
+    <a href="https://livekit.io"><img src="https://img.shields.io/badge/voice-LiveKit%20WebRTC-000000?style=flat-square&logo=webrtc&logoColor=white" alt="LiveKit Voice" /></a>
+    <img src="https://img.shields.io/badge/audio-Synchronized%20Lo--fi-e91e63?style=flat-square" alt="Synchronized Audio" />
+    <img src="https://img.shields.io/badge/languages-EN%20%C2%B7%20TR%20%C2%B7%20AR%20(RTL)-673AB7?style=flat-square" alt="Languages" />
+  </p>
+
+  <p align="center">
+    <a href="#architecture--technology-stack">Architecture</a> •
+    <a href="#academic-baseline--course-model">Academic Baseline & GANO</a> •
+    <a href="#study-together--25d-active-study-arena">2.5D Study Arena</a> •
+    <a href="#xp--gamification-system">Gamification & XP</a> •
+    <a href="#security--dual-token-authentication">Security</a>
+  </p>
+
+</div>
+
 
 ### For University Students: You get it all settled!
 Personalized degree, habit tracking, GANO calculation, and semster course selection. Above all that, the app analyzes the courses and sesmters you take based on your needs.
