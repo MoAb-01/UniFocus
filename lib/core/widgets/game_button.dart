@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
+import 'tactile_press.dart';
 
 enum GameButtonVariant {
-  primary, // Blue
-  success, // Emerald Green (START TOGETHER)
-  danger, // Red (LEAVE ROOM / STOP)
-  warning, // Orange (STREAKS / BREAK)
-  purple, // XP / Gamification
-  neutral, // Surface Slate
+  primary, // Deep Work Green
+  success, // Deep Work Green
+  danger, // Terracotta Break
+  warning, // Warm Amber
+  purple, // Lavender Arena
+  neutral, // Cardstock / Subtle
 }
 
-class GameButton extends StatefulWidget {
+class GameButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
   final IconData? icon;
@@ -26,114 +27,96 @@ class GameButton extends StatefulWidget {
     this.onPressed,
     this.icon,
     this.variant = GameButtonVariant.primary,
-    this.height = 54,
+    this.height = 52,
     this.width,
     this.isExpanded = true,
     this.isLoading = false,
   });
 
-  @override
-  State<GameButton> createState() => _GameButtonState();
-}
-
-class _GameButtonState extends State<GameButton> {
-  bool _isPressed = false;
-
-  (Color faceColor, Color bevelColor, Color textColor) _getColors() {
-    switch (widget.variant) {
+  (Color faceColor, Color textColor) _getColors() {
+    switch (variant) {
       case GameButtonVariant.primary:
-        return (AppColors.brandBlue, AppColors.brandBlueDark, Colors.white);
       case GameButtonVariant.success:
-        return (AppColors.gamifyEmerald, AppColors.gamifyEmeraldDark, Colors.white);
+        return (AppColors.deepWorkGreen, Colors.white);
       case GameButtonVariant.danger:
-        return (AppColors.dangerRed, AppColors.dangerRedDark, Colors.white);
+        return (AppColors.terracottaBreak, Colors.white);
       case GameButtonVariant.warning:
-        return (AppColors.streakOrange, AppColors.streakOrangeDark, Colors.white);
+        return (AppColors.warmAmber, Colors.white);
       case GameButtonVariant.purple:
-        return (AppColors.gamifyPurple, AppColors.gamifyPurpleDark, Colors.white);
+        return (AppColors.lavenderArena, Colors.white);
       case GameButtonVariant.neutral:
-        return (const Color(0xFFF1F5F9), const Color(0xFFCBD5E1), AppColors.textPrimaryLight);
+        return (AppColors.cardstock, AppColors.inkPrimary);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final (faceColor, bevelColor, textColor) = _getColors();
-    final isDisabled = widget.onPressed == null || widget.isLoading;
+    final colors = _getColors();
+    final isInteractive = onPressed != null && !isLoading;
 
-    final double bevelHeight = _isPressed || isDisabled ? 1.0 : 4.0;
-    final double topMargin = _isPressed || isDisabled ? 3.0 : 0.0;
-
-    Widget buttonContent = Container(
-      height: widget.height,
-      width: widget.width,
-      margin: EdgeInsets.only(top: topMargin),
+    final content = Container(
+      height: height,
+      width: width,
       decoration: BoxDecoration(
-        color: isDisabled ? Colors.grey.shade400 : faceColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDisabled ? Colors.grey.shade500 : bevelColor,
-          width: 1.5,
-        ),
-        boxShadow: isDisabled
-            ? null
-            : [
+        color: isInteractive ? colors.$1 : colors.$1.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.inkBorder, width: 1.5),
+        boxShadow: isInteractive
+            ? const [
                 BoxShadow(
-                  color: bevelColor,
-                  offset: Offset(0, bevelHeight),
+                  color: AppColors.inkBorder,
+                  offset: Offset(0, 3),
                   blurRadius: 0,
                 ),
-              ],
+              ]
+            : null,
       ),
-      alignment: Alignment.center,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: widget.isLoading
-          ? const SizedBox(
-              width: 22,
-              height: 22,
-              child: CircularProgressIndicator(
-                strokeWidth: 2.5,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            )
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (widget.icon != null) ...[
-                  Icon(widget.icon, color: textColor, size: 20),
-                  const SizedBox(width: 8),
-                ],
-                Flexible(
-                  child: Text(
-                    widget.text,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Center(
+        child: isLoading
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(colors.$2),
+                ),
+              )
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (icon != null) ...[
+                    Icon(icon, color: colors.$2, size: 20),
+                    const SizedBox(width: 8),
+                  ],
+                  Text(
+                    text.toUpperCase(),
                     style: TextStyle(
-                      color: textColor,
-                      fontSize: 16,
+                      color: colors.$2,
                       fontWeight: FontWeight.w800,
+                      fontSize: 13,
                       letterSpacing: 0.5,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+      ),
     );
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTapDown: isDisabled ? null : (_) => setState(() => _isPressed = true),
-      onTapCancel: isDisabled ? null : () => setState(() => _isPressed = false),
-      onTap: isDisabled
-          ? null
-          : () {
-              setState(() => _isPressed = false);
-              widget.onPressed?.call();
-            },
-      child: widget.isExpanded
-          ? SizedBox(width: double.infinity, child: buttonContent)
-          : buttonContent,
+    if (isExpanded) {
+      return TactilePress(
+        onTap: isInteractive ? onPressed : null,
+        child: SizedBox(
+          width: double.infinity,
+          child: content,
+        ),
+      );
+    }
+
+    return TactilePress(
+      onTap: isInteractive ? onPressed : null,
+      child: content,
     );
   }
 }

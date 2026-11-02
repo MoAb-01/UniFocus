@@ -1,3 +1,21 @@
 {
-    "cmake.sourceDirectory": "E:/unifocus/linux"
+    "cmake.sourceDirectory": "E:/unifocus/linux",
+    "java.server.launchMode": "LightWeight",
+    "java.autobuild.enabled": false,
+    "java.configuration.updateBuildConfiguration": "disabled",
+    "java.import.gradle.enabled": false,
+    "java.import.maven.enabled": false,
+    "java.project.importOnFirstTimeStartup": "disabled",
+    "java.project.importHint": false,
+    "java.jdt.ls.vmargs": "-XX:+UseParallelGC -Xmx256m -Xms64m",
+    "java.import.exclusions": [
+        "**/android/**",
+        "**/android",
+        "**/.gradle/**",
+        "**/build/**",
+        "**/.*/**"
+    ],
+    "gradle.autoDetect": "off",
+    "gradle.nestedProjects": false,
+    "java.gradle.buildServer.enabled": "off"
 }

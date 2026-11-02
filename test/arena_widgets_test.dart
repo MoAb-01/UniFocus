@@ -176,7 +176,7 @@ void main() {
               LevelBadge(level: 7),
               StreakBadge(streakDays: 12),
               StatusIndicator(status: ParticipantStatus.studying),
-              XPBar(level: 7, currentXp: 1840, maxXp: 2000),
+              XpBar(level: 7, currentXp: 1840, maxXp: 2000),
               AchievementBadge(title: 'First Study Together Session'),
             ],
           ),
@@ -184,7 +184,7 @@ void main() {
       );
 
       expect(find.text('LVL 7'), findsWidgets);
-      expect(find.text('12 DAY STREAK'), findsOneWidget);
+      expect(find.text('12 DAYS STREAK'), findsOneWidget);
       expect(find.text('STUDYING'), findsOneWidget);
       expect(find.text('1840 / 2000 XP'), findsOneWidget);
       expect(find.text('First Study Together Session'), findsOneWidget);

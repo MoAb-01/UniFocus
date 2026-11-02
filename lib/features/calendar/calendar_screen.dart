@@ -121,7 +121,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       },
                     )
                   : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                      padding: const EdgeInsets.fromLTRB(18, 14, 18, 108),
                       itemCount: filtered.length,
                       itemBuilder: (context, index) {
                         final event = filtered[index];

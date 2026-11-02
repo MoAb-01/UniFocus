@@ -29,7 +29,7 @@ void main() async {
 
   runApp(
     DevicePreview(
-      enabled: !kReleaseMode,
+      enabled: kIsWeb || !kReleaseMode,
       builder: (context) => UniFocusApp(
         storage: storage,
         academicService: academicService,

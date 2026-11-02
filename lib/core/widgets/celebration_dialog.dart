@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
-import '../theme/app_radii.dart';
-import '../theme/app_typography.dart';
+import 'analog_card.dart';
 import 'game_button.dart';
 
 class CelebrationDialog extends StatelessWidget {
@@ -50,159 +49,186 @@ class CelebrationDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    const daysOfWeek = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    final currentDayIndex = (DateTime.now().weekday - 1).clamp(0, 6);
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: AppRadii.roundedXl),
-      elevation: 16,
-      backgroundColor: isDark ? AppColors.surfaceDark : Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Celebratory Icon with halo
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [AppColors.gamifyYellow, AppColors.gamifyYellowDark],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.gamifyYellow.withValues(alpha: 0.35),
-                    blurRadius: 18,
-                    offset: const Offset(0, 6),
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 380),
+        child: AnalogCard(
+          borderRadius: 20,
+          padding: const EdgeInsets.all(24),
+          shadowOffset: 4,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Airmail punch-card header stamp
+              Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.cardstockSubtle,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: AppColors.inkBorder, width: 1.2),
                   ),
-                ],
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.emoji_events_rounded,
-                  size: 42,
-                  color: Colors.white,
+                  child: const Text(
+                    'OFFICIAL DESK LEDGER RECORD',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.inkPrimary,
+                      letterSpacing: 0.6,
+                    ),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 18),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: AppTypography.headline.copyWith(
-                color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
-                fontWeight: FontWeight.w900,
+              const SizedBox(height: 16),
+              // Main title & message
+              Text(
+                title.toUpperCase(),
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.inkPrimary,
+                  letterSpacing: -0.2,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: AppTypography.body.copyWith(
-                color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+              const SizedBox(height: 6),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.inkSecondary,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
+              const SizedBox(height: 18),
 
-            // Reward Badges Box
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.surfaceElevatedDark : const Color(0xFFF8FAFC),
-                borderRadius: AppRadii.roundedLg,
-                border: Border.all(
-                  color: isDark ? AppColors.borderDark : const Color(0xFFE2E8F0),
+              // Weekly Cadence Punch-Card Row (Mon to Sun)
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.paperBg,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.inkBorder, width: 1.2),
                 ),
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppColors.gamifyPurple,
-                          borderRadius: AppRadii.roundedMd,
-                          boxShadow: const [
-                            BoxShadow(
-                              color: AppColors.gamifyPurpleDark,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.bolt_rounded, color: Colors.white, size: 18),
-                            const SizedBox(width: 4),
-                            Text(
-                              '+$earnedXp XP',
-                              style: AppTypography.label.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w900,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppColors.streakOrange,
-                          borderRadius: AppRadii.roundedMd,
-                          boxShadow: const [
-                            BoxShadow(
-                              color: AppColors.streakOrangeDark,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.local_fire_department_rounded,
-                              color: Colors.white,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '$streakDays Day Streak',
-                              style: AppTypography.label.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w900,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (extraSubtitle != null) ...[
-                    const SizedBox(height: 10),
-                    Text(
-                      extraSubtitle!,
-                      textAlign: TextAlign.center,
-                      style: AppTypography.caption.copyWith(
-                        fontSize: 12.5,
-                        color: AppColors.gamifyEmeraldDark,
-                        fontWeight: FontWeight.w700,
+                child: Column(
+                  children: [
+                    const Text(
+                      'WEEKLY CADENCE PUNCH-CARD',
+                      style: TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.inkSecondary,
+                        letterSpacing: 0.5,
                       ),
                     ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: List.generate(7, (i) {
+                        final isCompleted = i <= currentDayIndex;
+                        return Column(
+                          children: [
+                            Text(
+                              daysOfWeek[i],
+                              style: const TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.inkSecondary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Container(
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: isCompleted ? AppColors.deepWorkGreen : AppColors.cardstock,
+                                border: Border.all(color: AppColors.inkBorder, width: 1.2),
+                              ),
+                              child: isCompleted
+                                  ? const Icon(Icons.check, size: 14, color: Colors.white)
+                                  : null,
+                            ),
+                          ],
+                        );
+                      }),
+                    ),
                   ],
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // XP & Streak Summary row
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.cardstockSubtle,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: AppColors.inkBorder, width: 1),
+                      ),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'CADENCE REWARD',
+                            style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: AppColors.inkSecondary),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '+$earnedXp XP',
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: AppColors.deepWorkGreen),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.cardstockSubtle,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: AppColors.inkBorder, width: 1),
+                      ),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'ACTIVE STREAK',
+                            style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: AppColors.inkSecondary),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '$streakDays DAYS',
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: AppColors.warmAmber),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
-            ),
-            const SizedBox(height: 24),
-            GameButton(
-              text: 'CONTINUE',
-              variant: GameButtonVariant.success,
-              onPressed: onDismiss,
-            ),
-          ],
+              const SizedBox(height: 20),
+
+              // Simple bold CTA button
+              GameButton(
+                text: 'RESUME CADENCE',
+                variant: GameButtonVariant.primary,
+                height: 48,
+                onPressed: onDismiss,
+              ),
+            ],
+          ),
         ),
       ),
     );

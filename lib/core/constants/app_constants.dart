@@ -3,7 +3,7 @@ class AppConstants {
 
   static const String appName = 'UniFocus';
   static const String appTagline = 'Study smarter. Stay organized.';
-  static const String developerCredit = 'Developed by Mohamed Abdou';
+  static const String developerCredit = 'Developed by ';
   static const String appVersion = '1.0.1';
 
   // Academic Years

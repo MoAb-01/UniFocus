@@ -51,7 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+          padding: const EdgeInsets.fromLTRB(18, 14, 18, 108),
           child: Column(
             children: [
               // User Identity Card
@@ -337,7 +337,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           applicationName: AppConstants.appName,
                           applicationVersion: AppConstants.appVersion,
-                          applicationLegalese: 'Developed by Mohamed Abdou for university students in Türkiye.',
+                          applicationLegalese: 'Developed by  for university students in Türkiye.',
                         );
                       },
                     ),

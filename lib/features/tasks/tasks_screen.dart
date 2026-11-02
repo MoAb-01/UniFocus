@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import '../../core/models/task_item.dart';
 import '../../core/services/academic_service.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/analog_card.dart';
+import '../../core/widgets/tactile_press.dart';
 import '../../core/widgets/task_item_widget.dart';
-import '../../core/widgets/celebration_dialog.dart';
 import 'add_edit_task_screen.dart';
 
 class TasksScreen extends StatefulWidget {
@@ -59,32 +59,65 @@ class _TasksScreenState extends State<TasksScreen> {
     final filtered = _getFilteredTasks();
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: AppColors.paperBg,
       appBar: AppBar(
-        title: const Text('Tasks & Deadlines'),
+        title: const Text('STUDY DOCKET & TASKS'),
+        centerTitle: false,
+        backgroundColor: AppColors.paperBg,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            tooltip: 'Add Task',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => AddEditTaskScreen(
-                    academicService: widget.academicService,
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: TactilePress(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AddEditTaskScreen(
+                      academicService: widget.academicService,
+                    ),
                   ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.deepWorkGreen,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.inkBorder, width: 1.2),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: AppColors.inkBorder,
+                      offset: Offset(0, 2),
+                      blurRadius: 0,
+                    ),
+                  ],
                 ),
-              );
-            },
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.add, size: 16, color: Colors.white),
+                    SizedBox(width: 4),
+                    Text(
+                      'ADD TASK',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ],
       ),
       body: SafeArea(
         child: Column(
           children: [
-            // Filter Selector
+            // Filter Selector Chips
             Container(
-              color: AppColors.surfaceLight,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -101,86 +134,60 @@ class _TasksScreenState extends State<TasksScreen> {
                 ),
               ),
             ),
-
-            // Smart Planner Tip Card
-            Padding(
-              padding: const EdgeInsets.fromLTRB(18, 12, 18, 4),
-              child: Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: AppColors.accentIndigo.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.accentIndigo.withValues(alpha: 0.2)),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.psychology_outlined, size: 22, color: AppColors.accentIndigo),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Smart Study Tip',
-                            style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.primaryNavy),
-                          ),
-                          Text(
-                            'Break down large academic assignments into 25-minute Pomodoro focus sprints to avoid deadline stress.',
-                            style: TextStyle(fontSize: 11.5, color: AppColors.textSecondaryLight),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
+            const Divider(color: AppColors.inkDivider, height: 1),
             // Task List
             Expanded(
               child: filtered.isEmpty
-                  ? EmptyState(
-                      icon: Icons.checklist_rounded,
-                      title: 'You\'re all caught up!',
-                      message: _activeFilter == 'Pending'
-                          ? 'Enjoy the free time, you crushed all your pending tasks.'
-                          : 'No tasks match this filter.',
-                      buttonText: '+ Add Task',
-                      onButtonPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => AddEditTaskScreen(
-                              academicService: widget.academicService,
-                            ),
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: AnalogCard(
+                          borderRadius: 16,
+                          padding: const EdgeInsets.all(24),
+                          shadowOffset: 2.5,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.task_alt_rounded,
+                                size: 36,
+                                color: AppColors.deepWorkGreen,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                _activeFilter == 'Completed'
+                                    ? 'No completed tasks recorded yet.'
+                                    : 'Docket is completely clear.',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.inkPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              const Text(
+                                'Maintain your cadence by logging upcoming assignment goals.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.inkSecondary,
+                                ),
+                              ),
+                            ],
                           ),
-                        );
-                      },
+                        ),
+                      ),
                     )
                   : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 96),
                       itemCount: filtered.length,
                       itemBuilder: (context, index) {
                         final task = filtered[index];
                         return TaskItemWidget(
                           task: task,
-                          onToggleComplete: (_) async {
-                            if (!task.isCompleted) {
-                              await widget.academicService.completeTaskAndReward(task.id);
-                              if (context.mounted) {
-                                CelebrationDialog.show(
-                                  context: context,
-                                  title: 'Task Completed!',
-                                  message: task.title,
-                                  earnedXp: 40,
-                                  streakDays: widget.academicService.profile.studyStreakDays,
-                                );
-                              }
-                            } else {
-                              widget.academicService.toggleTaskComplete(task.id);
-                            }
+                          onToggleComplete: (_) {
+                            widget.academicService.completeTaskAndReward(task.id);
                           },
-                          onStartFocus: () => widget.onStartFocus?.call(task),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -191,6 +198,11 @@ class _TasksScreenState extends State<TasksScreen> {
                                 ),
                               ),
                             );
+                          },
+                          onStartFocus: () {
+                            if (widget.onStartFocus != null) {
+                              widget.onStartFocus!(task);
+                            }
                           },
                         );
                       },
@@ -204,15 +216,34 @@ class _TasksScreenState extends State<TasksScreen> {
 
   Widget _buildFilterChip(String label) {
     final isSelected = _activeFilter == label;
-    return ChoiceChip(
-      label: Text(label),
-      selected: isSelected,
-      onSelected: (_) => setState(() => _activeFilter = label),
-      selectedColor: AppColors.primaryNavy,
-      labelStyle: TextStyle(
-        color: isSelected ? Colors.white : AppColors.textSecondaryLight,
-        fontWeight: FontWeight.w600,
-        fontSize: 12,
+
+    return TactilePress(
+      onTap: () => setState(() => _activeFilter = label),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.deepWorkGreen : AppColors.cardstock,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: AppColors.inkBorder, width: 1.2),
+          boxShadow: isSelected
+              ? const [
+                  BoxShadow(
+                    color: AppColors.inkBorder,
+                    offset: Offset(0, 2),
+                    blurRadius: 0,
+                  ),
+                ]
+              : null,
+        ),
+        child: Text(
+          label.toUpperCase(),
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.3,
+            color: isSelected ? Colors.white : AppColors.inkPrimary,
+          ),
+        ),
       ),
     );
   }

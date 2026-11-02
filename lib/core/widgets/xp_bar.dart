@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
-import '../theme/app_radii.dart';
-import '../theme/app_typography.dart';
-import 'level_badge.dart';
 
-/// Energetic, game-style XP Bar for UniFocus.
-/// Features smooth animated progress bar, shiny highlight, and Level badge.
+/// Analog, tactile cardstock XP Bar for UniFocus.
 class XpBar extends StatelessWidget {
   final int level;
   final int currentXp;
@@ -24,135 +20,62 @@ class XpBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double progress = (currentXp / maxXp).clamp(0.0, 1.0);
+    final double safeMax = maxXp > 0 ? maxXp.toDouble() : 100.0;
+    final double progress = (currentXp / safeMax).clamp(0.0, 1.0);
 
-    if (isCompact) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (showLabel) ...[
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'LEVEL $level',
-                style: AppTypography.label.copyWith(
-                  color: AppColors.gamifyPurple,
-                  fontSize: 10,
+                'LVL $level CADENCE',
+                style: const TextStyle(
+                  color: AppColors.inkPrimary,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.3,
                 ),
               ),
               Text(
                 '$currentXp / $maxXp XP',
-                style: AppTypography.caption.copyWith(
+                style: const TextStyle(
+                  color: AppColors.inkSecondary,
+                  fontSize: 11,
                   fontWeight: FontWeight.w700,
-                  fontSize: 10,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 4),
-          _buildProgressTrack(progress, height: 7),
+          const SizedBox(height: 5),
         ],
-      );
-    }
-
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: AppRadii.roundedLg,
-        border: Border.all(
-          color: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.borderDark
-              : AppColors.borderLight,
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            offset: const Offset(0, 4),
-            blurRadius: 10,
+        Container(
+          height: isCompact ? 8 : 10,
+          decoration: BoxDecoration(
+            color: AppColors.cardstockSubtle,
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: AppColors.inkBorder, width: 1.2),
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              LevelBadge(level: level),
-              Row(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Stack(
                 children: [
-                  const Icon(
-                    Icons.auto_awesome_rounded,
-                    size: 14,
-                    color: AppColors.gamifyPurple,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '$currentXp / $maxXp XP',
-                    style: AppTypography.label.copyWith(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.textSecondaryDark
-                          : AppColors.textSecondaryLight,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.3,
+                  Container(
+                    width: constraints.maxWidth * progress,
+                    decoration: BoxDecoration(
+                      color: AppColors.deepWorkGreen,
+                      borderRadius: BorderRadius.circular(4),
                     ),
                   ),
                 ],
-              ),
-            ],
+              );
+            },
           ),
-          const SizedBox(height: 12),
-          _buildProgressTrack(progress, height: 12),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProgressTrack(double progress, {required double height}) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final totalWidth = constraints.maxWidth;
-        return Container(
-          height: height,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? AppColors.surfaceElevatedDark
-                : const Color(0xFFE2E8F0),
-            borderRadius: BorderRadius.circular(height / 2),
-          ),
-          child: Stack(
-            children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 600),
-                curve: Curves.easeOutCubic,
-                width: totalWidth * progress,
-                height: height,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0xFF8B5CF6),
-                      Color(0xFFA855F7),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(height / 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.gamifyPurple.withValues(alpha: 0.45),
-                      blurRadius: 6,
-                      offset: const Offset(0, 1),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+        ),
+      ],
     );
   }
 }
-
-typedef XPBar = XpBar;

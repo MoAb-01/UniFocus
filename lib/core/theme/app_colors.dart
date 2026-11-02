@@ -1,132 +1,175 @@
 import 'package:flutter/material.dart';
 
-/// Centralized Gamified Color Palette for UniFocus.
-/// Combines Kahoot-like energy, Duolingo-like motivation, and purposeful academic hierarchy.
+/// Centralized Tactile Analog Palette for UniFocus matching `code.txt`.
 class AppColors {
   AppColors._();
 
-  // UniFocus Brand Primaries (Focus Orange & Warm White)
-  static const Color brandOrange = Color(0xFFF97316); // Signature Focus Orange
-  static const Color brandOrangeDark = Color(0xFFEA580C); // Bevel / active
-  static const Color brandOrangeLight = Color(0xFFFFF7ED); // Soft orange tint
-  static const Color brandOrangeGlow = Color(0xFFFB923C); // Ambient glow
+  // --- Exact Color Tokens from `code.txt` ---
+  static const Color surface = Color(0xFFFFF8F6); // #fff8f6
+  static const Color surfaceContainerLowest = Color(0xFFFFFFFF); // #ffffff
+  static const Color surfaceContainerLow = Color(0xFFFFF1EC); // #fff1ec
+  static const Color surfaceContainer = Color(0xFFF9EBE6); // #f9ebe6
+  static const Color surfaceContainerHigh = Color(0xFFF3E5E0); // #f3e5e0
+  static const Color surfaceVariant = Color(0xFFEDE0DB); // #ede0db
+  static const Color onSurface = Color(0xFF211A17); // #211a17
+  static const Color onSurfaceVariant = Color(0xFF424842); // #424842
+  static const Color outline = Color(0xFF727971); // #727971
+  static const Color outlineVariant = Color(0xFFC1C8C0); // #c1c8c0
 
-  // Vibrant Brand Primaries (Bright Blue)
-  static const Color brandBlue = Color(0xFF2563EB); // Electric Royal Blue
-  static const Color brandBlueDark = Color(0xFF1D4ED8); // Bevel/shadow for 3D buttons
-  static const Color brandBlueLight = Color(0xFFEFF6FF); // Soft blue tint
-  static const Color brandCyan = Color(0xFF06B6D4); // Electric Cyan highlight
+  static const Color primary = Color(0xFF163C24); // #163c24 (Deep forest green)
+  static const Color primaryContainer = Color(0xFF2E5339); // #2e5339
+  static const Color onPrimary = Color(0xFFFFFFFF);
+  static const Color onPrimaryFixed = Color(0xFF00210E); // #00210e (button ledge shadow)
+  static const Color onPrimaryFixedVariant = Color(0xFF294E35); // #294e35
+  static const Color primaryFixed = Color(0xFFC2EDCA); // #c2edca (Mint badge fill)
+
+  static const Color secondary = Color(0xFF994703); // #994703 (Rust brown text)
+  static const Color secondaryContainer = Color(0xFFFC934F); // #fc934f (Terracotta clock ring & accents)
+  static const Color onSecondaryContainer = Color(0xFF6D3000); // #6d3000
+  static const Color secondaryFixed = Color(0xFFFFDBC9); // #ffdbc9 (Washi tape & date badge fill)
+  static const Color secondaryFixedDim = Color(0xFFFFB68C); // #ffb68c (Brass paperclip)
+  static const Color onSecondaryFixedVariant = Color(0xFF753400); // #753400
+
+  static const Color tertiary = Color(0xFF223261); // #223261
+  static const Color tertiaryContainer = Color(0xFF3A497A); // #3a497a (Navy audio/arena icon box)
+  static const Color onTertiary = Color(0xFFFFFFFF);
+
+  // --- Tactile Analog Desk aliases ---
+  static const Color paperBg = surface;
+  static const Color cardstock = surfaceContainerLow;
+  static const Color cardstockSubtle = surfaceContainer;
+  static const Color inkBorder = onSurface;
+  static const Color inkBorderLight = outlineVariant;
+  static const Color inkDivider = surfaceVariant;
+  static const Color inkPrimary = onSurface;
+  static const Color inkSecondary = onSurfaceVariant;
+  static const Color inkTertiary = outline;
+  static const Color deepWorkGreen = primary;
+  static const Color deepWorkGreenHover = primaryContainer;
+  static const Color terracottaBreak = secondaryContainer;
+  static const Color warmAmber = secondaryContainer;
+  static const Color lavenderArena = tertiaryContainer;
+  static const Color hardShadow = onSurface;
+
+  // Backward compatibility mappings
+  static const Color backgroundLight = surface;
+  static const Color surfaceLight = surfaceContainerLow;
+  static const Color surfaceSubtle = surfaceContainer;
+  static const Color borderLight = outlineVariant;
+  static const Color dividerLight = surfaceVariant;
+
+  static const Color textPrimaryLight = onSurface;
+  static const Color textSecondaryLight = onSurfaceVariant;
+  static const Color textMutedLight = outline;
+
+  static const Color brandOrange = secondaryContainer;
+  static const Color brandOrangeDark = secondary;
+  static const Color brandOrangeLight = secondaryFixed;
+  static const Color brandOrangeGlow = secondaryContainer;
+
+  static const Color brandBlue = primary;
+  static const Color brandBlueDark = onPrimaryFixed;
+  static const Color brandBlueLight = primaryFixed;
+  static const Color brandCyan = tertiaryContainer;
 
   // Isometric Room Environment Tones
-  static const Color roomFloorLight = Color(0xFFEFE7DC);
-  static const Color roomFloorDark = Color(0xFF1D2230);
-  static const Color roomWallLight = Color(0xFFFAF8F5);
-  static const Color roomWallDark = Color(0xFF161A26);
-  static const Color roomWallAccentLight = Color(0xFFF3EEE6);
-  static const Color roomWallAccentDark = Color(0xFF202637);
-  static const Color roomDeskLight = Color(0xFFE4D5BF);
-  static const Color roomDeskDark = Color(0xFF2C241D);
-  static const Color roomChairDark = Color(0xFF334155);
+  static const Color roomFloorLight = Color(0xFFEFE8DD);
+  static const Color roomFloorDark = Color(0xFF26211E);
+  static const Color roomWallLight = Color(0xFFF8F5EE);
+  static const Color roomWallDark = Color(0xFF1F1A18);
+  static const Color roomWallAccentLight = Color(0xFFE8DFD3);
+  static const Color roomWallAccentDark = Color(0xFF2D2623);
+  static const Color roomDeskLight = Color(0xFFDFCDB5);
+  static const Color roomDeskDark = Color(0xFF3B3029);
+  static const Color roomChairDark = Color(0xFF382F2A);
 
-  // Gamification Accents (Purple, Emerald, Orange, Amber, Red)
-  static const Color gamifyPurple = Color(0xFF8B5CF6); // XP & Level Badges
-  static const Color gamifyPurpleDark = Color(0xFF7C3AED);
-  static const Color gamifyPurpleLight = Color(0xFFF5F3FF);
+  // Accents & Gamification
+  static const Color gamifyPurple = tertiaryContainer;
+  static const Color gamifyPurpleDark = tertiary;
+  static const Color gamifyPurpleLight = Color(0xFFDBE1FF);
 
-  static const Color gamifyEmerald = Color(0xFF10B981); // Success, Start Together, Completed
-  static const Color gamifyEmeraldDark = Color(0xFF059669);
-  static const Color gamifyEmeraldLight = Color(0xFFD1FAE5);
+  static const Color gamifyEmerald = primary;
+  static const Color gamifyEmeraldDark = onPrimaryFixed;
+  static const Color gamifyEmeraldLight = primaryFixed;
 
-  static const Color streakOrange = Color(0xFFF97316); // Hot Flame Streaks & Break Timer
-  static const Color streakOrangeDark = Color(0xFFEA580C);
-  static const Color streakOrangeLight = Color(0xFFFFF7ED);
+  static const Color streakOrange = secondaryContainer;
+  static const Color streakOrangeDark = secondary;
+  static const Color streakOrangeLight = secondaryFixed;
 
-  static const Color gamifyYellow = Color(0xFFF59E0B); // Stars, Honors, Coins
-  static const Color gamifyYellowDark = Color(0xFFD97706);
-  static const Color gamifyYellowLight = Color(0xFFFEF3C7);
+  static const Color gamifyYellow = secondaryContainer;
+  static const Color gamifyYellowDark = secondary;
+  static const Color gamifyYellowLight = secondaryFixed;
 
-  static const Color dangerRed = Color(0xFFEF4444); // Leave Room, Alerts, Overdue
-  static const Color dangerRedDark = Color(0xFFDC2626);
-  static const Color dangerRedLight = Color(0xFFFEE2E2);
+  static const Color dangerRed = Color(0xFFBA1A1A);
+  static const Color dangerRedDark = Color(0xFF93000A);
+  static const Color dangerRedLight = Color(0xFFFFDAD6);
 
   // Status Ring Colors (for Study Arena participants)
-  static const Color statusStudying = Color(0xFF10B981);
-  static const Color statusBreak = Color(0xFFF97316);
-  static const Color statusNeedHelp = Color(0xFF3B82F6);
-  static const Color statusGoalProgress = Color(0xFF8B5CF6);
-  static const Color statusLeavingSoon = Color(0xFF64748B);
+  static const Color statusStudying = primary;
+  static const Color statusBreak = secondaryContainer;
+  static const Color statusNeedHelp = tertiaryContainer;
+  static const Color statusGoalProgress = secondary;
+  static const Color statusLeavingSoon = onSurfaceVariant;
 
   // Program Indicators
-  static const Color mainProgramColor = Color(0xFF2563EB);
-  static const Color capProgramColor = Color(0xFF8B5CF6); // Double Major (ÇAP)
-  static const Color yandalProgramColor = Color(0xFF06B6D4); // Minor (Yandal)
+  static const Color mainProgramColor = primary;
+  static const Color capProgramColor = tertiaryContainer;
+  static const Color yandalProgramColor = secondaryContainer;
 
-  // Neutral Backgrounds & Surfaces (Light)
-  static const Color backgroundLight = Color(0xFFF8FAFC); // Very soft cool slate
-  static const Color surfaceLight = Color(0xFFFFFFFF);
-  static const Color surfaceSubtle = Color(0xFFF1F5F9);
-  static const Color borderLight = Color(0xFFE2E8F0);
-  static const Color dividerLight = Color(0xFFE2E8F0);
+  // Intentional Dark Mode Surfaces
+  static const Color backgroundDark = Color(0xFF1B1715);
+  static const Color surfaceDark = Color(0xFF241F1D);
+  static const Color surfaceElevatedDark = Color(0xFF2E2724);
+  static const Color borderDark = Color(0xFF423935);
+  static const Color dividerDark = Color(0xFF352D29);
 
-  // Intentional Dark Mode Surfaces (Oceanic midnight, not pure black or inverted)
-  static const Color backgroundDark = Color(0xFF0B0F19);
-  static const Color surfaceDark = Color(0xFF161F30);
-  static const Color surfaceElevatedDark = Color(0xFF1E293B);
-  static const Color borderDark = Color(0xFF293548);
-  static const Color dividerDark = Color(0xFF1E293B);
+  static const Color textPrimaryDark = Color(0xFFFFF8F6);
+  static const Color textSecondaryDark = Color(0xFFC4BBB2);
+  static const Color textMutedDark = Color(0xFF8F857D);
 
   // Arena Glows & Ambience
-  static const Color arenaRingLight = Color(0xFFE0E7FF);
-  static const Color arenaRingDark = Color(0xFF1E293B);
-  static const Color arenaPulseBlue = Color(0xFF38BDF8);
-  static const Color arenaPulseBreak = Color(0xFFFB923C);
-
-  // Typography Colors
-  static const Color textPrimaryLight = Color(0xFF0F172A);
-  static const Color textSecondaryLight = Color(0xFF64748B);
-  static const Color textMutedLight = Color(0xFF94A3B8);
-
-  static const Color textPrimaryDark = Color(0xFFF8FAFC);
-  static const Color textSecondaryDark = Color(0xFF94A3B8);
-  static const Color textMutedDark = Color(0xFF64748B);
+  static const Color arenaRingLight = surfaceContainer;
+  static const Color arenaRingDark = Color(0xFF2E2724);
+  static const Color arenaPulseBlue = tertiaryContainer;
+  static const Color arenaPulseBreak = secondaryContainer;
 
   // Semantic Mappings & Compatibility
-  static const Color primaryBlue = brandBlue;
-  static const Color primaryNavy = brandBlue;
-  static const Color primaryNavyDark = brandBlueDark;
-  static const Color primaryNavyLight = brandBlueLight;
+  static const Color primaryBlue = primary;
+  static const Color primaryNavy = primary;
+  static const Color primaryNavyDark = onPrimaryFixed;
+  static const Color primaryNavyLight = primaryFixed;
 
-  static const Color successEmerald = gamifyEmerald;
-  static const Color accentIndigo = Color(0xFF4F46E5);
-  static const Color accentIndigoLight = Color(0xFFEEF2FF);
-  static const Color accentCyan = brandCyan;
-  static const Color warningOrange = streakOrange;
-  static const Color warningOrangeDark = streakOrangeDark;
+  static const Color successEmerald = primary;
+  static const Color accentIndigo = tertiaryContainer;
+  static const Color accentIndigoLight = Color(0xFFDBE1FF);
+  static const Color accentCyan = tertiaryContainer;
+  static const Color warningOrange = secondaryContainer;
+  static const Color warningOrangeDark = secondary;
 
-  static const Color purpleProgram = gamifyPurple;
-  static const Color purpleProgramLight = gamifyPurpleLight;
+  static const Color purpleProgram = tertiaryContainer;
+  static const Color purpleProgramLight = Color(0xFFDBE1FF);
 
-  static const Color academicAmber = gamifyYellow;
-  static const Color academicAmberDark = gamifyYellowDark;
-  static const Color academicAmberLight = gamifyYellowLight;
+  static const Color academicAmber = secondaryContainer;
+  static const Color academicAmberDark = secondary;
+  static const Color academicAmberLight = secondaryFixed;
 
   static const Color errorRose = dangerRed;
   static const Color errorRoseDark = dangerRedDark;
   static const Color errorRoseLight = dangerRedLight;
 
-  static const Color successGreen = gamifyEmerald;
-  static const Color successGreenDark = gamifyEmeraldDark;
-  static const Color successGreenLight = gamifyEmeraldLight;
+  static const Color successGreen = primary;
+  static const Color successGreenDark = onPrimaryFixed;
+  static const Color successGreenLight = primaryFixed;
 
-  static const Color surfaceElevatedLight = surfaceLight;
+  static const Color surfaceElevatedLight = surfaceContainerLow;
 
   // Course Tile Distinctive Accent Colors
   static const List<Color> courseColors = [
-    Color(0xFF2563EB), // Blue
-    Color(0xFF8B5CF6), // Purple
-    Color(0xFF10B981), // Emerald
-    Color(0xFFF97316), // Orange
-    Color(0xFF06B6D4), // Cyan
-    Color(0xFFEC4899), // Pink
+    Color(0xFF163C24), // Deep Forest Green
+    Color(0xFF3A497A), // Navy
+    Color(0xFFFC934F), // Terracotta
+    Color(0xFF994703), // Rust Brown
+    Color(0xFF2E5339), // Moss Green
+    Color(0xFF223261), // Midnight Blue
   ];
 }

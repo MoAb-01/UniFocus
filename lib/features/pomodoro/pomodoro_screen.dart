@@ -5,11 +5,8 @@ import '../../core/services/academic_service.dart';
 import '../../core/services/pomodoro_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
-import '../../core/utils/date_formatters.dart';
-import '../../core/widgets/pomodoro_timer_widget.dart';
-import '../../core/widgets/section_header.dart';
-import '../../core/widgets/stat_card.dart';
 import '../../core/widgets/celebration_dialog.dart';
+import '../../core/widgets/pomodoro_timer_widget.dart';
 import 'break_recommendation_dialog.dart';
 
 class PomodoroScreen extends StatefulWidget {
@@ -27,6 +24,8 @@ class PomodoroScreen extends StatefulWidget {
 }
 
 class _PomodoroScreenState extends State<PomodoroScreen> {
+  int _extraSecondsOffset = 0;
+
   @override
   void initState() {
     super.initState();
@@ -49,11 +48,11 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         CelebrationDialog.show(
           context: context,
-          title: 'Nice work!',
-          message: 'Focus session completed! Great study momentum.',
+          title: 'SESSION CONCLUDED',
+          message: 'Cadence maintained. Great focus work today.',
           earnedXp: 50,
           streakDays: widget.academicService.profile.studyStreakDays,
-          extraSubtitle: 'Streak maintained & focus recorded!',
+          extraSubtitle: 'Sprint recorded to your desk ledger.',
         );
       });
     }
@@ -74,221 +73,219 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
     }
   }
 
+  void _selectTimerMode(int workMins, int breakMins) {
+    setState(() => _extraSecondsOffset = 0);
+    widget.pomodoroService.setDurations(workMinutes: workMins, breakMinutes: breakMins);
+  }
+
+  void _toggleTimer() {
+    if (widget.pomodoroService.isRunning) {
+      widget.pomodoroService.pause();
+    } else {
+      widget.pomodoroService.startOrResume();
+    }
+  }
+
+  void _addFiveMinutes() {
+    setState(() => _extraSecondsOffset += 300);
+  }
+
+  void _completeOrSkipSprint() {
+    setState(() => _extraSecondsOffset = 0);
+    widget.pomodoroService.skipToNextPhase();
+  }
+
+  void _resetTimer() {
+    setState(() => _extraSecondsOffset = 0);
+    widget.pomodoroService.reset();
+  }
+
   @override
   Widget build(BuildContext context) {
     final ps = widget.pomodoroService;
     final courses = widget.academicService.activeCourses;
     final pendingTasks = widget.academicService.tasks.where((t) => !t.isCompleted).toList();
 
-    final focusToday = widget.academicService.focusMinutesToday;
-    final focusWeek = widget.academicService.focusMinutesThisWeek;
-    final focusByCourse = widget.academicService.focusMinutesByCourse;
-
     final isRunning = ps.isRunning;
+    final isBreak = ps.isBreak;
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: AppColors.surface,
       appBar: AppBar(
-        title: const Text('Focus & Pomodoro'),
+        title: Text(
+          'TIMER',
+          style: AppTypography.literata(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: AppColors.onSurface,
+          ),
+        ),
+        centerTitle: false,
+        backgroundColor: AppColors.surface,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 116),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Duration Mode Toggle (50/10 vs 25/5)
-              if (!isRunning)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ChoiceChip(
-                      label: const Text('50m Focus / 10m Break'),
-                      selected: ps.workMinutes == 50,
-                      onSelected: (_) => ps.setDurations(workMinutes: 50, breakMinutes: 10),
-                      selectedColor: AppColors.primaryNavy,
-                      labelStyle: TextStyle(
-                        color: ps.workMinutes == 50 ? Colors.white : AppColors.textSecondaryLight,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    ChoiceChip(
-                      label: const Text('25m Focus / 5m Break'),
-                      selected: ps.workMinutes == 25,
-                      onSelected: (_) => ps.setDurations(workMinutes: 25, breakMinutes: 5),
-                      selectedColor: AppColors.primaryNavy,
-                      labelStyle: TextStyle(
-                        color: ps.workMinutes == 25 ? Colors.white : AppColors.textSecondaryLight,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-
-              const SizedBox(height: 16),
-
-              // Course & Task Selectors (if not actively running)
+              // Mode selectors: 50m Focus / 10m Break vs 25m Focus / 5m Break
               if (!isRunning) ...[
                 Row(
                   children: [
                     Expanded(
-                      child: DropdownButtonFormField<Course?>(
-                        value: ps.selectedCourse,
-                        decoration: const InputDecoration(
-                          hintText: 'Select Course',
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                        ),
-                        items: [
-                          const DropdownMenuItem<Course?>(
-                            value: null,
-                            child: Text('General Focus', style: TextStyle(fontSize: 13)),
-                          ),
-                          ...courses.map((c) => DropdownMenuItem(
-                                value: c,
-                                child: Text('${c.code} - ${c.name}', style: const TextStyle(fontSize: 13), overflow: TextOverflow.ellipsis),
-                              )),
-                        ],
-                        onChanged: (val) => ps.selectCourse(val),
+                      child: _buildDurationOption(
+                        label: '50m Focus / 10m Break',
+                        isSelected: !isBreak && ps.workMinutes == 50,
+                        onTap: () => _selectTimerMode(50, 10),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _buildDurationOption(
+                        label: '25m Focus / 5m Break',
+                        isSelected: !isBreak && ps.workMinutes == 25,
+                        onTap: () => _selectTimerMode(25, 5),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
-                if (pendingTasks.isNotEmpty)
-                  DropdownButtonFormField<TaskItem?>(
-                    value: ps.selectedTask,
-                    decoration: const InputDecoration(
-                      hintText: 'Select Goal / Task (Optional)',
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    ),
-                    items: [
-                      const DropdownMenuItem<TaskItem?>(
-                        value: null,
-                        child: Text('No specific task', style: TextStyle(fontSize: 13)),
-                      ),
-                      ...pendingTasks.map((t) => DropdownMenuItem(
-                            value: t,
-                            child: Text('${t.courseCode}: ${t.title}', style: const TextStyle(fontSize: 13), overflow: TextOverflow.ellipsis),
-                          )),
-                    ],
-                    onChanged: (val) => ps.selectTask(val),
-                  ),
-                const SizedBox(height: 24),
-              ],
-
-              // Central Pomodoro Timer Widget
-              PomodoroTimerWidget(
-                remainingSeconds: ps.remainingSeconds,
-                totalSeconds: ps.totalSeconds,
-                isRunning: ps.isRunning,
-                isBreak: ps.isBreak,
-                courseCode: ps.selectedCourse?.code ?? ps.selectedTask?.courseCode ?? '',
-                taskTitle: ps.selectedTask?.title ?? ps.selectedCourse?.name ?? 'General Focus Session',
-                onToggleStartPause: () {
-                  if (ps.isRunning) {
-                    ps.pause();
-                  } else {
-                    ps.startOrResume();
-                  }
-                },
-                onReset: ps.reset,
-                onSkip: ps.skipToNextPhase,
-              ),
-
-              const SizedBox(height: 36),
-
-              // Productivity Statistics
-              const SectionHeader(
-                title: 'Productivity Statistics',
-                subtitle: 'Track your weekly focus consistency',
-              ),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: StatCard(
-                      title: 'Focus Today',
-                      value: DateFormatters.formatDurationMinutes(focusToday),
-                      subtitle: '${ps.completedSessionsToday} sessions completed',
-                      icon: Icons.today_outlined,
-                      valueColor: AppColors.primaryNavy,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: StatCard(
-                      title: 'Focus This Week',
-                      value: DateFormatters.formatDurationMinutes(focusWeek),
-                      subtitle: 'Active study week',
-                      icon: Icons.date_range_outlined,
-                      valueColor: AppColors.accentIndigo,
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // Focus Time By Course breakdown
-              if (focusByCourse.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                // Course & Task Selector
                 Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceLight,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.borderLight),
+                    color: AppColors.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: AppColors.onSurface,
+                        offset: Offset(0, 2),
+                        blurRadius: 0,
+                      ),
+                    ],
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'FOCUS TIME BY COURSE',
-                        style: AppTypography.labelUppercase,
-                      ),
-                      const SizedBox(height: 12),
-                      ...focusByCourse.entries.map((entry) {
-                        final percentage = focusWeek > 0 ? (entry.value / focusWeek) : 0.0;
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    entry.key,
-                                    style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600),
-                                  ),
-                                  Text(
-                                    DateFormatters.formatDurationMinutes(entry.value),
-                                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.primaryNavy),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(4),
-                                child: LinearProgressIndicator(
-                                  value: percentage.clamp(0.0, 1.0),
-                                  backgroundColor: AppColors.surfaceSubtle,
-                                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.brandBlue),
-                                  minHeight: 5,
-                                ),
-                              ),
-                            ],
+                      DropdownButtonFormField<Course?>(
+                        value: ps.selectedCourse,
+                        decoration: const InputDecoration(
+                          hintText: 'Select Course',
+                          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        ),
+                        items: [
+                          DropdownMenuItem<Course?>(
+                            value: null,
+                            child: Text(
+                              'General Focus',
+                              style: AppTypography.courierPrime(fontSize: 12, fontWeight: FontWeight.w700),
+                            ),
                           ),
-                        );
-                      }),
+                          ...courses.map((c) => DropdownMenuItem(
+                                value: c,
+                                child: Text(
+                                  '${c.code} - ${c.name}',
+                                  style: AppTypography.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w600),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              )),
+                        ],
+                        onChanged: (val) => ps.selectCourse(val),
+                      ),
+                      if (pendingTasks.isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        DropdownButtonFormField<TaskItem?>(
+                          value: ps.selectedTask,
+                          decoration: const InputDecoration(
+                            hintText: 'Attach Docket Task (Optional)',
+                            contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                          ),
+                          items: [
+                            DropdownMenuItem<TaskItem?>(
+                              value: null,
+                              child: Text(
+                                'No specific task',
+                                style: AppTypography.courierPrime(fontSize: 12, fontWeight: FontWeight.w400),
+                              ),
+                            ),
+                            ...pendingTasks.map((t) => DropdownMenuItem(
+                                  value: t,
+                                  child: Text(
+                                    '${t.courseCode}: ${t.title}',
+                                    style: AppTypography.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w600),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                )),
+                          ],
+                          onChanged: (val) => ps.selectTask(val),
+                        ),
+                      ],
                     ],
                   ),
                 ),
+                const SizedBox(height: 16),
               ],
-              const SizedBox(height: 20),
+
+              // Central Mechanical Radial Pomodoro Widget (with +5 Mins, Reset, Done)
+              PomodoroTimerWidget(
+                remainingSeconds: ps.remainingSeconds + _extraSecondsOffset,
+                totalSeconds: ps.totalSeconds + _extraSecondsOffset,
+                isRunning: ps.isRunning,
+                isBreak: ps.isBreak,
+                courseCode: ps.selectedCourse?.code ?? ps.selectedTask?.courseCode ?? '',
+                taskTitle: ps.selectedTask?.title ?? ps.selectedCourse?.name ?? 'Deep Focus Session',
+                onToggleStartPause: _toggleTimer,
+                onReset: _resetTimer,
+                onSkip: _completeOrSkipSprint,
+                onAddFiveMinutes: _addFiveMinutes,
+              ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDurationOption({
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary : AppColors.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : AppColors.outlineVariant,
+            width: 1.2,
+          ),
+          boxShadow: isSelected
+              ? const [
+                  BoxShadow(
+                    color: AppColors.onPrimaryFixed,
+                    offset: Offset(0, 2),
+                    blurRadius: 0,
+                  ),
+                ]
+              : const [
+                  BoxShadow(
+                    color: AppColors.onSurface,
+                    offset: Offset(0, 1),
+                    blurRadius: 0,
+                  ),
+                ],
+        ),
+        child: Text(
+          label,
+          style: AppTypography.courierPrime(
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            color: isSelected ? Colors.white : AppColors.onSurface,
+            letterSpacing: 0.3,
           ),
         ),
       ),

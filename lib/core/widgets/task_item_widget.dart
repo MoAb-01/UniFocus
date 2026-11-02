@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/task_item.dart';
 import '../theme/app_colors.dart';
-import '../theme/app_typography.dart';
 import '../utils/date_formatters.dart';
+import 'analog_card.dart';
+import 'tactile_press.dart';
 
 class TaskItemWidget extends StatelessWidget {
   final TaskItem task;
@@ -20,167 +21,188 @@ class TaskItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color priorityColor;
-    switch (task.priority.toLowerCase()) {
-      case 'high':
-        priorityColor = AppColors.errorRose;
-        break;
-      case 'medium':
-        priorityColor = AppColors.warningOrange;
-        break;
-      default:
-        priorityColor = AppColors.textSecondaryLight;
-    }
-
     final relativeDue = DateFormatters.formatRelativeDue(task.dueDate);
     final isOverdue = task.dueDate.isBefore(DateTime.now()) && !task.isCompleted;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceLight,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isOverdue ? AppColors.errorRose.withOpacity(0.4) : AppColors.borderLight,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    String priorityLabel = '[NORMAL]';
+    Color priorityBorderColor = AppColors.inkBorderLight;
+    Color priorityTextColor = AppColors.inkSecondary;
+
+    if (task.priority.toLowerCase() == 'high') {
+      priorityLabel = '[URGENT]';
+      priorityBorderColor = AppColors.terracottaBreak;
+      priorityTextColor = AppColors.terracottaBreak;
+    } else if (task.priority.toLowerCase() == 'medium') {
+      priorityLabel = '[PRIORITY]';
+      priorityBorderColor = AppColors.warmAmber;
+      priorityTextColor = AppColors.warmAmber;
+    }
+
+    final durationMins = task.estimatedStudyMinutes > 0 ? task.estimatedStudyMinutes : 25;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: AnalogCard(
+        borderRadius: 12,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        borderColor: isOverdue ? AppColors.terracottaBreak : AppColors.inkBorder,
+        shadowOffset: 2.0,
+        onTap: onTap,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Checkbox
-                SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: Checkbox(
-                    value: task.isCompleted,
-                    onChanged: onToggleComplete,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                    activeColor: AppColors.primaryNavy,
+            // Clean square checkbox
+            TactilePress(
+              onTap: onToggleComplete != null ? () => onToggleComplete!(!task.isCompleted) : null,
+              child: Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: task.isCompleted ? AppColors.deepWorkGreen : AppColors.cardstock,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    color: AppColors.inkBorder,
+                    width: 1.5,
                   ),
                 ),
-                const SizedBox(width: 10),
-                // Title and course code
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                child: task.isCompleted
+                    ? const Icon(
+                        Icons.check,
+                        size: 14,
+                        color: Colors.white,
+                      )
+                    : null,
+              ),
+            ),
+            const SizedBox(width: 10),
+            // Task info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
                     children: [
-                      Row(
-                        children: [
-                          if (task.courseCode.isNotEmpty) ...[
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: AppColors.primaryNavy.withOpacity(0.06),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                task.courseCode,
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.primaryNavy,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                          ],
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: priorityColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              task.priority,
-                              style: TextStyle(
-                                fontSize: 10.5,
-                                fontWeight: FontWeight.w700,
-                                color: priorityColor,
-                              ),
+                      if (task.courseCode.isNotEmpty) ...[
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                          decoration: BoxDecoration(
+                            color: AppColors.cardstockSubtle,
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: AppColors.inkBorder, width: 1),
+                          ),
+                          child: Text(
+                            task.courseCode.toUpperCase(),
+                            style: const TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.inkPrimary,
+                              letterSpacing: 0.2,
                             ),
                           ),
-                        ],
+                        ),
+                        const SizedBox(width: 5),
+                      ],
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1.5),
+                        decoration: BoxDecoration(
+                          color: AppColors.cardstock,
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: priorityBorderColor, width: 1),
+                        ),
+                        child: Text(
+                          priorityLabel,
+                          style: TextStyle(
+                            fontSize: 8.5,
+                            fontWeight: FontWeight.w800,
+                            color: priorityTextColor,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
                       ),
-                      const SizedBox(height: 5),
-                      Text(
-                        task.title,
-                        style: TextStyle(
-                          fontSize: 14.5,
-                          fontWeight: FontWeight.w600,
-                          color: task.isCompleted
-                              ? AppColors.textMutedLight
-                              : AppColors.textPrimaryLight,
-                          decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+                      const SizedBox(width: 5),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1.5),
+                        decoration: BoxDecoration(
+                          color: AppColors.cardstockSubtle,
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: AppColors.inkBorderLight, width: 1),
+                        ),
+                        child: Text(
+                          '[$durationMins m]',
+                          style: const TextStyle(
+                            fontSize: 8.5,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.inkSecondary,
+                            letterSpacing: 0.2,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
-                // Focus launcher
-                if (onStartFocus != null && !task.isCompleted)
-                  IconButton(
-                    icon: const Icon(Icons.timer_outlined, size: 20, color: AppColors.primaryBlue),
-                    tooltip: 'Focus on this task',
-                    onPressed: onStartFocus,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            // Progress Bar if in progress
-            if (task.progress > 0 && !task.isCompleted) ...[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: LinearProgressIndicator(
-                  value: task.progress,
-                  backgroundColor: AppColors.surfaceElevatedLight,
-                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accentIndigo),
-                  minHeight: 5,
-                ),
-              ),
-              const SizedBox(height: 6),
-            ],
-            // Footer: Due date & estimated study time
-            Padding(
-              padding: const EdgeInsets.only(left: 34),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.access_time_rounded,
-                    size: 13,
-                    color: isOverdue ? AppColors.errorRose : AppColors.textSecondaryLight,
-                  ),
-                  const SizedBox(width: 4),
+                  const SizedBox(height: 3),
                   Text(
-                    relativeDue,
+                    task.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: isOverdue ? FontWeight.w700 : FontWeight.w500,
-                      color: isOverdue ? AppColors.errorRose : AppColors.textSecondaryLight,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: task.isCompleted ? AppColors.inkTertiary : AppColors.inkPrimary,
+                      decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+                      decorationColor: AppColors.inkTertiary,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  const Text('•', style: TextStyle(color: AppColors.textMutedLight)),
-                  const SizedBox(width: 12),
-                  Icon(Icons.bolt_outlined, size: 13, color: AppColors.textSecondaryLight),
-                  const SizedBox(width: 3),
+                  const SizedBox(height: 1),
                   Text(
-                    DateFormatters.formatDurationMinutes(task.estimatedStudyMinutes),
-                    style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textSecondaryLight,
+                    isOverdue ? 'Overdue • $relativeDue' : relativeDue,
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: isOverdue ? FontWeight.w700 : FontWeight.w500,
+                      color: isOverdue ? AppColors.terracottaBreak : AppColors.inkSecondary,
                     ),
                   ),
                 ],
               ),
             ),
+            // Start focus button
+            if (onStartFocus != null && !task.isCompleted) ...[
+              const SizedBox(width: 8),
+              TactilePress(
+                onTap: onStartFocus,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: AppColors.deepWorkGreen,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: AppColors.inkBorder, width: 1.2),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: AppColors.inkBorder,
+                        offset: Offset(0, 1.5),
+                        blurRadius: 0,
+                      ),
+                    ],
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.timer_outlined, size: 12, color: Colors.white),
+                      SizedBox(width: 3),
+                      Text(
+                        'FOCUS',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
-import '../theme/app_radii.dart';
-import '../theme/app_typography.dart';
 
-/// Tactile, game-style Streak Indicator badge.
-/// Zero Unicode emojis: uses vector Icons.local_fire_department_rounded with flame glow.
+/// Tactile, analog Streak Indicator badge.
+/// Zero Unicode emojis: uses typographic formatting and a clean vector icon with zero-blur border styling.
 class StreakBadge extends StatelessWidget {
   final int streakDays;
   final bool isLarge;
@@ -19,23 +17,17 @@ class StreakBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: isLarge ? 14 : 9,
-        vertical: isLarge ? 7 : 4,
+        horizontal: isLarge ? 12 : 8,
+        vertical: isLarge ? 6 : 4,
       ),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.streakOrange,
-            AppColors.streakOrangeDark,
-          ],
-        ),
-        borderRadius: isLarge ? AppRadii.roundedLg : AppRadii.roundedMd,
+        color: AppColors.cardstock,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.inkBorder, width: 1.2),
         boxShadow: const [
           BoxShadow(
-            color: Color(0xFFC2410C),
-            offset: Offset(0, 2.5),
+            color: AppColors.inkBorder,
+            offset: Offset(0, 2),
             blurRadius: 0,
           ),
         ],
@@ -45,17 +37,17 @@ class StreakBadge extends StatelessWidget {
         children: [
           Icon(
             Icons.local_fire_department_rounded,
-            size: isLarge ? 19 : 14,
-            color: Colors.white,
+            size: isLarge ? 16 : 13,
+            color: AppColors.warmAmber,
           ),
-          const SizedBox(width: 5),
+          const SizedBox(width: 4),
           Text(
-            '$streakDays DAY STREAK',
-            style: AppTypography.label.copyWith(
-              color: Colors.white,
-              fontSize: isLarge ? 13 : 10.5,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 0.6,
+            '$streakDays ${streakDays == 1 ? 'DAY' : 'DAYS'} STREAK',
+            style: TextStyle(
+              color: AppColors.inkPrimary,
+              fontWeight: FontWeight.w800,
+              fontSize: isLarge ? 12 : 10,
+              letterSpacing: 0.2,
             ),
           ),
         ],
@@ -63,6 +55,3 @@ class StreakBadge extends StatelessWidget {
     );
   }
 }
-
-/// Alias for naming consistency
-typedef StreakIndicator = StreakBadge;
