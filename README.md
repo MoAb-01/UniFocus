@@ -1,204 +1,166 @@
 <div align="center">
 
-  <img src="assets/images/unifocus_logo_white.png" alt="UniFocus Logo" width="220" style="border-radius: 14px;" />
+  <img src="assets/images/unifocus_logo_white.png" alt="UniFocus Logo" width="180" style="border-radius: 14px;" />
 
   # UniFocus
+  **Akademik ve Sosyal Yaşam Uygulaması**
 
   <p>
-    <b>The academic productivity workbench; a modern, open-source focus companion and multiplayer study arena built in Flutter.</b><br>
-    Track cumulative GANO & AKTS, conquer Pomodoro sprints, manage course milestones, and study together in synchronized 2.5D virtual rooms.
+    <a href="LICENSE"><img src="https://img.shields.io/badge/lisans-MIT-blue.svg?style=flat-square" alt="Lisans" /></a>
+    <a href="https://flutter.dev"><img src="https://img.shields.io/badge/framework-Flutter-02569B?style=flat-square&logo=flutter&logoColor=white" alt="Flutter" /></a>
+    <a href="https://dart.dev"><img src="https://img.shields.io/badge/dil-Dart-0175C2?style=flat-square&logo=dart&logoColor=white" alt="Dart" /></a>
+    <img src="https://img.shields.io/badge/platform-Android%20%C2%B7%20iOS-4CAF50?style=flat-square" alt="Platformlar" />
+    <a href="https://firebase.google.com"><img src="https://img.shields.io/badge/backend-Google%20Firebase-FFCA28?style=flat-square&logo=firebase&logoColor=black" alt="Firebase" /></a>
+    <a href="https://livekit.io"><img src="https://img.shields.io/badge/ses-LiveKit%20WebRTC-000000?style=flat-square&logo=webrtc&logoColor=white" alt="LiveKit WebRTC" /></a>
   </p>
 
   <p align="center">
-    <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License" /></a>
-    <a href="https://flutter.dev"><img src="https://img.shields.io/badge/written%20in-Flutter%20%7C%20Dart-02569B?style=flat-square&logo=flutter&logoColor=white" alt="Written in Flutter" /></a>
-    <img src="https://img.shields.io/badge/runs%20on-Android%20%C2%B7%20iOS%20%C2%B7%20Web%20%C2%B7%20Desktop-4CAF50?style=flat-square" alt="Supported Platforms" />
-    <img src="https://img.shields.io/badge/security-Dual--Token%20Auth-00897B?style=flat-square" alt="Dual-Token Auth" />
+    <b>Türkçe</b> • <a href="README_EN.md">English</a> • <a href="README_AR.md">العربية</a>
   </p>
 
-  <p align="center">
-    <a href="https://firebase.google.com"><img src="https://img.shields.io/badge/realtime%20sync-Google%20Firebase-FFCA28?style=flat-square&logo=firebase&logoColor=black" alt="Firebase Sync" /></a>
-    <a href="https://livekit.io"><img src="https://img.shields.io/badge/voice-LiveKit%20WebRTC-000000?style=flat-square&logo=webrtc&logoColor=white" alt="LiveKit Voice" /></a>
-    <img src="https://img.shields.io/badge/audio-Synchronized%20Lo--fi-e91e63?style=flat-square" alt="Synchronized Audio" />
-    <img src="https://img.shields.io/badge/languages-EN%20%C2%B7%20TR%20%C2%B7%20AR%20(RTL)-673AB7?style=flat-square" alt="Languages" />
-  </p>
-
-  <p align="center">
-    <a href="#architecture--technology-stack">Architecture</a> •
-    <a href="#academic-baseline--course-model">Academic Baseline & GANO</a> •
-    <a href="#study-together--25d-active-study-arena">2.5D Study Arena</a> •
-    <a href="#xp--gamification-system">Gamification & XP</a> •
-    <a href="#security--dual-token-authentication">Security</a>
+  <p>
+    <a href="#-kullanıcı-gözünden-unifocus">Kullanıcı Gözüyle</a> •
+    <a href="#️-kullanılan-teknolojiler">Teknolojiler</a> •
+    <a href="#-25d-izometrik-çalışma-alanı-mimarisi">2.5D Çalışma Odası</a> •
+    <a href="#-akademik-motor--gano-hesaplama">Akademik Motor</a> •
+    <a href="#-oyunlaştırma-ve-mola-mini-oyunları">Oyunlaştırma & Oyunlar</a>
   </p>
 
 </div>
 
-### For University Students: You get it all settled!
-Personalized degree, habit tracking, GANO calculation, and semester course selection. Above all that, the app analyzes the courses and semesters you take based on your needs.
+---
 
-### For School Students
-Choose your academic year, select the classes you take and select your school. Play minigames and enjoy your learning studies.
+## 🎯 Kullanıcı Gözünden UniFocus
 
-### For y'all: Let's be more Social
-#### The app provides a synchronized studying environment of a 2.5D physical study office where you can invite your friends to study together, play minigames, and have fun!
+UniFocus; ders takibini, günlük görev yönetimini ve gerçek zamanlı çok oyunculu çalışma ortamını hem üniversite hem de okul öğrencileri için tek bir işbirliği platformunda bir araya getirir.
+
+### 1. Üniversite Öğrencileri İçin
+- **Tüm Akademik Sürecinizi Takip Edin:** Her dönem sıfırdan hesaplama yapma zahmetine girmeden mevcut derslerinizi, güncel GANO'nuzu ve tamamlanan AKTS kredilerinizi girerek mezuniyet ilerlemenizi ve akademik analizlerinizi görüntüleyin.
+- **Çift Anadal (ÇAP) ve Yandal Entegrasyonu:** Ana dal derslerinizin yanında ikinci anadal veya yandal derslerinizi de ekleyin; iki programın müfredatını eş zamanlı takip edin.
+- **Farklı Not Sistemleri Desteği:** Üniversitelere özel harf notu katsayıları ve değerlendirme matrislerine tam uyum.
+- **Üniversite Düzeyinde Sıralama:** Kampüsünüzdeki diğer öğrencilerle çalışma süresi ve tamamlanan akademik hedefler üzerinden tatlı bir rekabete girin.
+
+### 2. Okul Öğrencileri İçin
+- **Özelleştirilmiş Müfredat:** Okul derslerinizi, sınıf seviyenizi ve okulunuzu sisteme kolayca tanımlayın.
+- **Öğrenci Sıralamaları:** Okulunuzdaki ve diğer kurumlardaki öğrencilerle düzenli çalışma sürelerinizi karşılaştırın.
+
+### 3. Tüm Öğrenciler İçin Temel Özellikler
+- **Gelişmiş Odaklanma Sayaçları:** Derin çalışma alışkanlıkları kazanmak için yapılandırılabilir Pomodoro odak döngüleri.
+- **Öncelikli Görev Yönetimi:** Ödev, proje ve sınav hazırlıklarınızı önem derecesine göre düzenleyin.
+- **Günlük Seri (Streak) Takibi:** Her gün düzenli çalışarak serinizi koruyun ve çalışma disiplininizi artırın.
+
+### 4. Birlikte Çalışma: Arkadaşlarınızla 2.5D Sanal Çalışma Odası
+- **Canlı Çalışma Odaları:** 9 haneli oda kodları (`XXX-XXX-XXX`) ile arkadaşlarınızı toplayıp paylaşımlı 2.5D sanal çalışma odasında bir araya gelin.
+- **Görsel Çalışma Durumu:** Hangi derse çalıştığınızı veya kısa mola durumunuzu anlık yansıtın; avatarınız durumunuza göre masada otursun veya ayağa kalkıp kapıya yürüsün.
+- **Grup Molaları ve Sesli Sohbet:** Oda üyeleri mola için oy birliğine vardığında herkes mola salonuna geçer ve WebRTC destekli gecikmesiz sesli sohbete bağlanır.
+- **Ortak Müzik Kuyruğu:** Tüm katılımcılarla saniyesi saniyesine senkronize lo-fi müzik çalın; sıradaki parçaları dinamik müzik kuyruğuna ekleyin.
+- **Mola Mini Oyunları:** Kısa sınavlar, pratik matematik, hafıza kartları ve kelime bulmacalarıyla zihninizi arkadaşlarınızla birlikte tazeleyin.
+- **Göz Dinlendirme ve Mola Görevleri:** Su içmek veya ekran yorgunluğuna karşı gözleri dinlendirmek gibi fiziksel alışkanlıkları tamamlayarak ekstra XP kazanın.
+
+<div align="center">
+  <img src="assets/screenshots/arena_controls.png" alt="Oda Kontrolleri" width="260" style="border-radius: 14px;" />
+  <p><i>Canlı oda seçenekleri, anlık durum güncellemesi ve bekleme modlu sesli kanal.</i></p>
+</div>
 
 ---
 
-## Architecture & Technology Stack
+## 🛠️ Kullanılan Teknolojiler
 
-- **Framework**: Dart
-- **Backend Source of Truth**: Google Firebase
-  - **Firebase Authentication**: Dual-Token architecture with short-lived memory access tokens, secure refresh tokens, sliding inactivity limits, and silent renewal on 401 Unauthorized.
-  - **Cloud Firestore**: Realtime collections for `users/{uid}`, `users/{uid}/semesters/{semId}/courses/{courseId}`, `users/{uid}/tasks/{taskId}`, `users/{uid}/xpTransactions/{txId}`, and `rooms/{roomId}` with subcollection `rooms/{roomId}/members/{uid}`.
-  - **Firebase Storage**: User avatars and academic document attachments.
-- **Real-Time Voice**: LiveKit WebRTC with backend token generation and real microphone audio activity detection.
-- **Audio Synchronization**: Synchronized ambient audio using server timestamp offsets and bundled royalty-free audio tracks.
-- **Localization**: Native English (`en`), Turkish (`tr`), and Arabic (`ar`) with true bidirectional RTL support.
+UniFocus, harici ağır oyun motorları yerine Flutter'ın saf vektör çizim yetenekleri ve modern bulut mimarisi üzerinde çalışır:
 
----
-
-## Academic Baseline Model (For University Students)
-
-### Academic Baseline vs Entered Courses
-UniFocus avoids forcing students to enter four years of historical courses manually. Onboarding captures the student's existing baseline:
-- `previousGpa`: The cumulative GPA achieved prior to using UniFocus (nullable).
-- `previousCompletedAKTS`: Total credits completed prior to using UniFocus.
-
-If a student is in their Preparatory Year (`PREP`) or is a Freshman who has not yet completed graded courses, `previousGpa` is set to `null`. The user interface displays **`GPA NOT SET`** rather than misleading `0.00`.
-
-When graded courses are entered into UniFocus, cumulative GANO is calculated precisely by weighting the previous baseline with newly completed courses:
-
-$$\text{Cumulative GANO} = \frac{(\text{previousGpa} \times \text{previousCompletedAKTS}) + \sum (\text{course.gradePoints} \times \text{course.akts})}{\text{previousCompletedAKTS} + \sum \text{gradedCourse.akts}}$$
-
-If `previousGpa` is unset and no graded courses exist, the application displays **`GPA NOT SET`** with no fabricated changes.
-
-### Multi-Program Support (Double & Minor)
-UniFocus provides full first-class support for students with secondary programs:
-- Single Major (`NONE`)
-- Double Major (`CAP`)
-- Minor Program (`MINOR`)
-
-Every course explicitly specifies its academic program ownership (`programType: MAIN | CAP | MINOR`), allowing students to add courses belonging to either their primary department or secondary degree. Academic screens feature quick program filter chips (*All Programs*, *Main Program*, *ÇAP*, *Yandal*).
+| Alan | Kullanılan Teknoloji | Neden Tercih Edildi? |
+| :--- | :--- | :--- |
+| **Ön Yüz & Arayüz** | **Flutter / Dart** | Tek kod tabanından Android ve iOS için yüksek performanslı yerel derleme. |
+| **2.5D Grafik Motoru** | **Saf Flutter `CustomPainter` / Canvas** | Harici oyun motoru (Flame/Unity) veya görsel sprite kullanmadan, tamamen matematiksel vektör yollarıyla 60 FPS izometrik oda çizimi. |
+| **Veritabanı & Senkronizasyon** | **Google Cloud Firestore** | Koltuk sahipliği, kullanıcı durumu, görevler ve müzik zaman damgaları için anlık çift yönlü senkronizasyon. |
+| **Kimlik Doğrulama & Güvenlik** | **Firebase Auth & Çift-Token (Dual-Token)** | Bellekte tutulan kısa ömürlü erişim jetonları ve güvenli dönen yenileme jetonları ile korunan oturum yapısı. |
+| **Gerçek Zamanlı Ses (WebRTC)** | **LiveKit Cloud & WebRTC SFU** | Donanımsal yankı engelleme ve gerçek ses aktivitesi algılama destekli düşük gecikmeli grup sesi. |
+| **Jeton (Token) Sunucusu** | **Render (Node.js/Go)** | Firebase kullanıcı kimliğini doğrulayıp şifreli LiveKit erişim anahtarlarını imzalayan mikroservis. |
+| **Müzik Senkronizasyon Döngüsü** | **İstemci Taraflı Zaman Damgası Algoritması** | Yerel lo-fi müzikler ve Firestore zaman damgası üzerinden 5 saniyede bir çalışan 3 saniyelik kayma düzeltme döngüsü. |
 
 ---
 
-## Study Together & 2.5D Active Study Arena
+## 📐 2.5D İzometrik Çalışma Alanı Mimarisi
 
-### Real Multiplayer Architecture
-- Real rooms are identified by 9-digit codes formatted as `XXX-XXX-XXX`.
-- Room state is stored under `rooms/{roomId}` with participants in `rooms/{roomId}/members/{uid}`.
-- If a user has never joined or hosted an arena, the UI renders the clean empty state: **`NO ACTIVE ROOMS`** with options to **`CREATE NEW ARENA`** or **`JOIN ARENA`**.
+Çalışma odası, 2:1 dimetrik projeksiyon formülüyle çalışan özel vektör çizim motoruna sahiptir:
 
-### 2.5D Physical Workstation Allocation
-- The 2.5D Isometric Room features 6 predefined physical workstations.
-- Workstation assignment is deterministic: `[0, 3, 1, 4, 2, 5]` to ensure peers sit separated before filling adjacent desks.
-- **Unused Desks Hidden**: During `ACTIVE` focus mode, unused desks are completely hidden. If 2 students study together, only 2 desks are rendered.
-- **Personal Break**: When a single participant takes a personal break, only their avatar stands up, walks to the door, and exits the room. Their desk becomes visibly unoccupied while other peers remain focused.
-- **Group Break & Voting**: When a peer requests a group break, a room-wide vote banner is presented to all members. When the vote condition passes, the entire room transitions to the Break Lounge.
-- **Host Disconnect Policy**: When the host leaves a room with remaining peers, host authority is deterministically transferred to the next longest-standing member, preventing the room from becoming orphaned.
+$$\text{screenX} = \text{originX} + (x - y) \times \frac{\text{tileWidth}}{2}$$
+$$\text{screenY} = \text{originY} + (x + y) \times \frac{\text{tileHeight}}{2} - z$$
 
-### LiveKit Voice & Speaking Detection
-- In the Break Lounge, real WebRTC voice is powered by LiveKit.
-- The speaking indicator is driven directly by LiveKit audio level callbacks (`ActiveSpeakersChangedEvent`), displaying glowing speech rings and waveforms based on real participant microphone audio.
-- Microphones are automatically muted upon room entry and cleanly disconnected when exiting the lounge.
+- **Dinamik Derinlik Sıralaması (Depth Sorting):** Çizim esnasında masa ve karakterlerin birbirini hatalı örtmesini önlemek için her karede sıralama uygulanır:
+  $$\text{depth} = (x + y) \times 100 + z$$
+- **Deterministik Koltuk Dağılımı:** Odadaki 6 masa, öğrencilerin eşit aralıklarla yerleşmesi için şu sırayla doldurulur: `[0, 3, 1, 4, 2, 5]`.
+- **Prosedürel Yürüme ve Nefes Alma:** Sprite kareleri yerine sinüs dalgalarıyla yürüyüş yaylanması oluşturulur; masada otururken nefes alma salınımı ($\pm 1.4\text{px}$) hesaplanır.
 
-### Synchronized Lo-fi Audio
-- Music uses bundled, royalty-free audio tracks (`assets/audio/`) to guarantee immediate playback across all platforms without external network or CORS failures.
-- Playback synchronization is timestamp-based (`musicState.startedAt` and `currentPositionSeconds`), avoiding writing to Firestore every second while allowing late joiners to seek to the shared playback position.
+<div align="center">
+  <img src="assets/screenshots/room_active.png" alt="2.5D Çalışma Odası" width="260" style="border-radius: 14px;" />
+  <p><i>Dinamik derinlik sıralaması ve canlı odaklanma sayaçlarına sahip saf Canvas vektör odası.</i></p>
+</div>
 
 ---
 
-## XP & Gamification System
+## 📊 Akademik Motor & GANO Hesaplama
 
-### XP Philosophy
-The UniFocus XP system is designed to reward genuine academic consistency, focused study sprints, task completion, and collaborative peer learning. XP is awarded exclusively for verifiable, completed academic activities.
+Geçmiş dersleri tek tek girme zorunluluğunu ortadan kaldıran ağırlıklı AKTS formülü:
 
-### XP Sources
-The following table documents every XP source and its exact reward value implemented in `GamificationService`:
+$$\text{Kümülatif GANO} = \frac{(\text{baselineGpa} \times \text{baselineAkts}) + \sum (\text{ders.harfKatsayısı} \times \text{ders.akts})}{\text{baselineAkts} + \sum \text{tamamlananDers.akts}}$$
 
-| Activity | XP Awarded |
-|---|---:|
-| Normal task completed | +10 XP |
-| High-priority task completed | +15 XP |
-| 25–30 minute completed focus session | +25 XP |
-| 50–60 minute completed focus session | +50 XP |
-| 90+ minute completed focus session | +75 XP |
-| Daily focus goal completed (4 sessions) | +30 XP bonus |
-| Completed Study Together session | +25 XP |
-| Completed multiplayer session bonus | +25 XP |
-| Completed social mini-game | +5 XP |
-| Daily streak continuation | +5 XP |
-| 7-day streak milestone | +50 XP bonus |
-| 30-day streak milestone | +200 XP bonus |
+*Hazırlık sınıfı veya henüz notu açıklanmamış öğrenciler için `baselineGpa` değeri `null` kabul edilir ve ekranda yanıltıcı bir `0.00` yerine **`NOT GİRİLMEDİ`** gösterilir.*
 
-### Activities that DO NOT Award XP
-To prevent game-playing and maintain gamification integrity, the following activities **never award XP**:
-- Opening or viewing a screen
-- Joining or leaving a Study Together room
-- Starting and immediately cancelling a focus session
-- Navigating back and forth between tabs
-- Reconnecting to Firestore or LiveKit
-- Refreshing the web browser or restarting the mobile application
-
-### Level Formula
-Player levels follow a progressive quadratic XP requirement curve. Level thresholds are documented below:
-
-| Level | Lifetime XP Required | Incremental XP to Next Level |
-|:---:|:---:|:---:|
-| **Level 1** | 0 XP | 100 XP |
-| **Level 2** | 100 XP | 150 XP |
-| **Level 3** | 250 XP | 200 XP |
-| **Level 4** | 450 XP | 250 XP |
-| **Level 5** | 700 XP | 300 XP |
-| **Level 6** | 1000 XP | 350 XP |
-| **Level 7** | 1350 XP | 400 XP |
-| **Level 8** | 1750 XP | 450 XP |
-| **Level 9** | 2200 XP | 500 XP |
-| **Level 10** | 2700 XP | 550 XP |
-
-For levels beyond Level 10, the XP required scales consistently at:
-
-$$\text{XP}(\text{Level } N) = 2700 + (N - 10) \times 550$$
-
-### Streak System
-- **Starting a Streak**: Completing at least one verified focus sprint (minimum 25 minutes) or completing an academic task starts a 1-day streak.
-- **Continuation**: Completing an activity on consecutive calendar days increments the streak count and awards +5 XP per day.
-- **Missed Day**: If a full calendar day passes without any completed focus session or task, the streak resets to 0.
-- **Milestone Bonuses**: Reaching a 7-day streak awards a **+50 XP** milestone bonus. Reaching a 30-day streak awards a **+200 XP** milestone bonus.
-
-### Anti-Abuse Rules & Idempotency
-- **Idempotency Keys**: Every XP award is stamped with a unique `idempotencyKey` (e.g. `task_{taskId}`, `session_{sessionId}`).
-- **Transaction Audit Trail**: Each transaction is stored in Cloud Firestore under `users/{uid}/xpTransactions/{transactionId}`. If a transaction with that key already exists, additional XP is strictly rejected.
-- **Server-Side Trust**: Client-side widgets cannot arbitrarily modify the total XP integer; all mutations occur via `GamificationService` transaction sets.
-
-### Comprehensive Example Calculation
-Suppose a student completes the following activities in one day:
-1. Completes 2 normal academic tasks: $2 \times (+10\text{ XP}) = +20\text{ XP}$
-2. Completes a 50-minute Pomodoro focus session: $+50\text{ XP}$
-3. Hits their 4-session daily focus goal: $+30\text{ XP bonus}$
-4. Completes a multiplayer Study Together session: $+25\text{ XP}$
-
-$$\text{Total XP Earned} = 20 + 50 + 30 + 25 = 125\text{ XP}$$
-
-A brand-new user starting at **0 XP (Level 1)** earns 125 XP, advancing to **Level 2** (requiring 100 XP) with 25 XP toward Level 3 (requiring 250 XP total).
-
-### New User Default State
-For every freshly registered account:
-- $\text{XP} = 0$
-- $\text{Level} = 1$
-- $\text{Streak} = 0$
-- $\text{Total Focus Minutes} = 0$
-- $\text{Courses} = 0$
-- $\text{Tasks} = 0$
-- $\text{Rooms} = 0$
+<div align="center">
+  <img src="assets/screenshots/academic_profile.png" alt="Akademik Profil" width="260" style="border-radius: 14px;" />
+  <p><i>Ana Dal, Çift Anadal (ÇAP) ve Yandal programlarını bir arada destekleyen akademik takip paneli.</i></p>
+</div>
 
 ---
 
-## Security & Dual-Token Authentication
+## 🎮 Oyunlaştırma ve Mola Mini Oyunları
 
-UniFocus implements a strict Dual-Token authentication architecture adhering to professional web security standards:
-- **In-Memory Access Token**: Short-lived (15–60 min) token held strictly in memory.
-- **Secure Refresh Token**: Long-lived token stored securely in `SharedPreferences`.
-- **Sliding Inactivity Expiration**: A 7-day sliding inactivity limit logs out dormant sessions.
-- **Silent Renewal**: Network requests that encounter `401 Unauthorized` automatically attempt background silent renewal using the refresh token before redirecting to the login screen.
-- **Token Rotation**: Every refresh event generates a fresh rotated token to invalidate stale tokens.
+Kazanılan XP puanları, istemci taraflı hileleri önlemek için benzersiz işlem anahtarlarıyla (`idempotencyKey`) buluta işlenir:
+
+| Aktivite | Kazanılan XP |
+| :--- | :---: |
+| Normal Görev Tamamlama | +10 XP |
+| Yüksek Öncelikli Görev | +15 XP |
+| 25–30 Dakika Odaklanma | +25 XP |
+| 50–60 Dakika Odaklanma | +50 XP |
+| 90+ Dakika Derin Çalışma | +75 XP |
+| Günlük Hedef Bonusu (4 Seans) | +30 XP |
+| Ortak Çalışma Seansı | +25 XP |
+| 7 Günlük / 30 Günlük Seri Bonusu | +50 / +200 XP |
+
+### Senkronize Mola Oyunları
+1. **Quick Quiz:** 3 turluk hızlı akademik genel kültür yarışması.
+2. **Fast Math:** Süreli zihinsel işlem ve pratik aritmetik testi.
+3. **Word Challenge:** Karışık harflerden kelime türetme ve anagramlar.
+4. **Memory Match:** Kısa süreli görsel hafıza ve sıra hatırlama egzersizi.
+
+<div align="center">
+  <img src="assets/screenshots/streak_modal.png" alt="Günlük Seri ve XP" width="260" style="border-radius: 14px;" />
+  <p><i>Günlük girişleri, seri devamlılığını ve XP çarpanlarını takip eden check-in penceresi.</i></p>
+</div>
+
+---
+
+## 🤝 Destek ve İşbirliği
+
+<p align="center">
+  <a href="https://github.com/MoAb-01/unifocus/issues/new?template=bug_report.md">
+    <img src="https://img.shields.io/badge/Hata%20Bildir-Issue%20Aç-E53935?style=for-the-badge&logo=github&logoColor=white" alt="Hata Bildir" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/MoAb-01/unifocus/issues/new?template=feature_request.md">
+    <img src="https://img.shields.io/badge/Öneri%20Yap-Yeni%20Özellik-43A047?style=for-the-badge&logo=github&logoColor=white" alt="Özellik Öner" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/MoAb-01/unifocus/discussions">
+    <img src="https://img.shields.io/badge/Topluluk-Tartışmalar-0288D1?style=for-the-badge&logo=github&logoColor=white" alt="Tartışmalar" />
+  </a>
+  &nbsp;
+  <a href="mailto:mohamedgaboucontact@gmail.com">
+    <img src="https://img.shields.io/badge/Doğrudan%20İletişim-E--posta-FF8F00?style=for-the-badge&logo=gmail&logoColor=white" alt="İletişim" />
+  </a>
+</p>
+
+### 🌟 Projeyi Destekleyin
+Bu uygulama henüz geliştirme aşamasındadır. Vereceğiniz destek, projeyi geliştirmemiz ve yeni özellikler eklememiz için harika bir motivasyon olacaktır. Repoya bir yıldız ⭐ bırakarak projenin daha fazla öğrenciye ulaşmasına yardımcı olabilirsiniz!
