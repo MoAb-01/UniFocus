@@ -74,4 +74,3 @@ flutter analyze
 ## 💬 Tartışmalar ve İletişim
 
 - Fikir alışverişi için [GitHub Tartışmalar (Discussions)](https://github.com/MoAb-01/unifocus/discussions) alanına katılın.
-- Akademik sorular ve doğrudan iletişim için **mohamedgaboucontact@gmail.com** adresinden bize ulaşabilirsiniz.
