@@ -6,12 +6,18 @@
   **تطبيق الحياة الأكاديمية والإنتاجية الاجتماعية**
 
   <p>
-    <a href="LICENSE"><img src="https://img.shields.io/badge/الترخيص-MIT-blue.svg?style=flat-square" alt="الترخيص" /></a>
-    <a href="https://flutter.dev"><img src="https://img.shields.io/badge/إطار_العمل-Flutter-02569B?style=flat-square&logo=flutter&logoColor=white" alt="Flutter" /></a>
-    <a href="https://dart.dev"><img src="https://img.shields.io/badge/اللغة-Dart-0175C2?style=flat-square&logo=dart&logoColor=white" alt="Dart" /></a>
-    <img src="https://img.shields.io/badge/المنصات-Android%20%C2%B7%20iOS-4CAF50?style=flat-square" alt="المنصات" />
-    <a href="https://firebase.google.com"><img src="https://img.shields.io/badge/الخادم-Google%20Firebase-FFCA28?style=flat-square&logo=firebase&logoColor=black" alt="Firebase" /></a>
-    <a href="https://livekit.io"><img src="https://img.shields.io/badge/الصوت-LiveKit%20WebRTC-000000?style=flat-square&logo=webrtc&logoColor=white" alt="LiveKit WebRTC" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License" /></a>
+    <a href="https://flutter.dev"><img src="https://img.shields.io/badge/framework-Flutter-02569B?style=flat-square&logo=flutter&logoColor=white" alt="Flutter" /></a>
+    <a href="https://dart.dev"><img src="https://img.shields.io/badge/language-Dart-0175C2?style=flat-square&logo=dart&logoColor=white" alt="Dart" /></a>
+    <img src="https://img.shields.io/badge/platforms-Android%20%C2%B7%20iOS-4CAF50?style=flat-square" alt="Platforms" />
+    <a href="https://firebase.google.com"><img src="https://img.shields.io/badge/backend-Google%20Firebase-FFCA28?style=flat-square&logo=firebase&logoColor=black" alt="Firebase" /></a>
+    <a href="https://livekit.io"><img src="https://img.shields.io/badge/voice-LiveKit%20WebRTC-000000?style=flat-square&logo=webrtc&logoColor=white" alt="LiveKit WebRTC" /></a>
+  </p>
+
+  <p>
+    <a href="https://github.com/MoAb-01/unifocus/releases/latest">
+      <img src="https://img.shields.io/badge/Download_Latest_APK-v1.0.0_Beta-2ea44f?style=for-the-badge&logo=android&logoColor=white" alt="تحميل ملف APK للأندرويد" />
+    </a>
   </p>
 
   <p align="center">
@@ -19,19 +25,19 @@
   </p>
 
   <p>
-    <a href="#-منظور-المستخدم">منظور المستخدم</a> •
-    <a href="#️-التقنيات-المستخدمة">التقنيات المستخدمة</a> •
-    <a href="#-محرك-مساحة-العمل-ثنائية-الأبعاد-النصفية-25d">محرك مساحة العمل 2.5D</a> •
-    <a href="#-المحرك-الأكاديمي-وحساب-المعدل-التراكمي">المحرك الأكاديمي</a> •
-    <a href="#-التلعيب-والألعاب-المصغرة">التلعيب والألعاب المصغرة</a> •
-    <a href="#-اختبارات-الأداء-والضغط-المتزامن">اختبارات الأداء والضغط</a>
+    <a href="#user-perspective">منظور المستخدم</a> •
+    <a href="#tech-stack">التقنيات المستخدمة</a> •
+    <a href="#room-engine">محرك مساحة العمل 2.5D</a> •
+    <a href="#academic-engine">المحرك الأكاديمي</a> •
+    <a href="#gamification">التلعيب والألعاب</a> •
+    <a href="#performance">اختبارات الأداء والضغط</a>
   </p>
 
 </div>
 
 ---
 
-## 🎯 منظور المستخدم
+## 🎯 منظور المستخدم <a id="user-perspective"></a>
 
 يجمع UniFocus بين متابعة المسار الدراسي وإدارة المهام اليومية وبيئة الدراسة الجماعية التفاعلية في منصة تعاونية متكاملة لطلاب الجامعات والمدارس.
 
@@ -50,6 +56,11 @@
 - **إدارة المهام ذات الأولوية:** نظّم واجباتك ومشاريعك واستعدادك للاختبارات وفق درجات الأهمية.
 - **متابعة الالتزام اليومي (Streak):** حافظ على استمرارية الدراسة اليومية لتعزيز انضباطك الدراسي.
 
+<div align="center">
+  <img src="assets/screenshots/Focus_Timer.png" alt="الواجهة الرئيسية ومركز التركيز" width="260" style="border-radius: 14px;" />
+  <p><i>الواجهة الرئيسية ومركز التركيز</i></p>
+</div>
+
 ### 4. الدراسة الجماعية: مساحات دراسة افتراضية 2.5D
 - **غرف دراسة حية:** اجمع زملاءك برمز غرفة مكون من 9 خانات (`XXX-XXX-XXX`) في غرفة دراسة تفاعلية مشتركة.
 - **تفاعل بصري آني:** تعكس الشخصية الافتراضية حالتك الحالية فوراً، فإما تجلس على المكتب للدراسة أو تتجه نحو الباب عند أخذ استراحة.
@@ -59,13 +70,14 @@
 - **مهام العناية بالصحة:** احصل على نقاط XP إضافية بإتمام عادات صحية كشرب الماء وإراحة العينين من شاشات الأجهزة.
 
 <div align="center">
-  <img src="assets/screenshots/arena_controls.png" alt="عناصر التحكم في الغرفة" width="260" style="border-radius: 14px;" />
-  <p><i>عناصر تحكم حية للغرفة مع تحديث فوري للحالة وقنوات صوتية بوضع الاستعداد.</i></p>
+  <img src="assets/screenshots/Together_Lobby.png" alt="ردهة الانضمام للغرفة" width="250" style="border-radius: 14px; margin-right: 12px;" />
+  <img src="assets/screenshots/arena_controls.png" alt="عناصر التحكم في الغرفة" width="250" style="border-radius: 14px;" />
+  <p><i>الردهة وعناصر التحكم في الغرفة</i></p>
 </div>
 
 ---
 
-## 🛠️ التقنيات المستخدمة
+## 🛠️ التقنيات المستخدمة <a id="tech-stack"></a>
 
 يعتمد UniFocus على إمكانيات الرسم المتجهي الأصلية في Flutter وبنية سحابية حديثة بدلاً من محركات الألعاب الخارجية الثقيلة:
 
@@ -82,7 +94,7 @@
 
 ---
 
-## 📐 محرك مساحة العمل ثنائية الأبعاد النصفية (2.5D)
+## 📐 محرك مساحة العمل ثنائية الأبعاد النصفية (2.5D) <a id="room-engine"></a>
 
 تعتمد غرفة الدراسة على محرك رسم متجهي مخصص يعمل بمعادلات الإسقاط الدايمتري بنسبة 2:1:
 
@@ -95,30 +107,30 @@ $$\text{screenY} = \text{originY} + (x + y) \times \frac{\text{tileHeight}}{2} -
 - **حركات إجرائية للمشي والتنفس:** استبدال ملفات الرسوم المتحركة المتتابعة بمعادلات جيبية ناعمة لحركة المشي وتذبذب التنفس أثناء الجلوس ($\pm 1.4\text{px}$).
 
 <div align="center">
-  <img src="assets/screenshots/room_active.png" alt="غرفة دراسة نشطة" width="260" style="border-radius: 14px;" />
-  <p><i>غرفة متجهة نقية على Canvas مع ترتيب ديناميكي للعمق ومؤقتات تركيز متزامنة مباشرة.</i></p>
+  <img src="assets/screenshots/room_active.png" alt="تصميم واجهة الغرفة" width="260" style="border-radius: 14px;" />
+  <p><i>تصميم واجهة الغرفة</i></p>
 </div>
 
 ---
 
-## 📊 المحرك الأكاديمي وحساب المعدل التراكمي
+## 📊 المحرك الأكاديمي وحساب المعدل التراكمي <a id="academic-engine"></a>
 
 معادلة دقيقة تعتمد على أوزان ساعات ECTS وتغني الطالب عن إدخال كافة الفصول السابقة يدوياً:
 
-$$\text{المعدل التراكمي} = \frac{(\text{baselineGpa} \times \text{baselineAkts}) + \sum (\text{وزن_الدرجة} \times \text{ساعات_المقرر})}{\text{baselineAkts} + \sum \text{ساعات_المقررات_المكتملة}}$$
+$$\text{المعدل التراكمي} = \frac{(\text{baselineGpa} \times \text{baselineAkts}) + \sum (\text{وزن الدرجة} \times \text{ساعات المقرر})}{\text{baselineAkts} + \sum \text{ساعات المقررات المكتملة}}$$
 
-*بالنسبة لطلاب السنة التحضيرية أو عند عدم رصد الدرجات، تكون قيمة `baselineGpa` فارغة (`null`) ويظهر في الواجهة **`لم تُسجَّل درجات`** بدلاً من قيمة `0.00` المضللة.*
+*بالنسبة لطلاب السنة التحضيرية أو عند عدم رصد الدرجات، تكون قيمة `baselineGpa` فارغة (`null`) ويظهر في الواجهة **`لم تُسجَّل درجات`** بدلاً من قيمة `0.00` المضللة.*
 
 <div align="center">
-  <img src="assets/screenshots/academic_profile.png" alt="الملف الأكاديمي" width="260" style="border-radius: 14px;" />
-  <p><i>لوحة متابعة أكاديمية شاملة تدعم التخصص الرئيسي والمزدوج والفرعي في شاشة واحدة.</i></p>
+  <img src="assets/screenshots/academic_profile.png" alt="لوحة المتابعة الأكاديمية" width="260" style="border-radius: 14px;" />
+  <p><i>لوحة المتابعة الأكاديمية</i></p>
 </div>
 
 ---
 
-## 🎮 التلعيب والألعاب المصغرة
+## 🎮 التلعيب والألعاب المصغرة <a id="gamification"></a>
 
-تُسجَّل نقاط الخبرة (XP) المكتسبة في التخزين السحابي باستخدام مفاتيح عمليات فريدة (`idempotencyKey`) لمنع التكرار والتلاعب:
+تُسجَّل نقاط الخبرة (XP) المكتسبة في التخزين السحابي باستخدام مفاتيح عمليات فريدة (`idempotencyKey`) لمنع التكرار والتلاعب:
 
 | النشاط | نقاط XP المكتسبة |
 | :--- | :---: |
@@ -138,13 +150,13 @@ $$\text{المعدل التراكمي} = \frac{(\text{baselineGpa} \times \text{
 4. **تطابق الذاكرة (Memory Match):** تمرين بصري قصير لتذكر الأنماط والتسلسل.
 
 <div align="center">
-  <img src="assets/screenshots/streak_modal.png" alt="الاستمرارية اليومية ونقاط الخبرة" width="260" style="border-radius: 14px;" />
-  <p><i>نافذة تسجيل الدخول اليومي ومتابعة الاستمرارية ومضاعفات نقاط الخبرة.</i></p>
+  <img src="assets/screenshots/streak_modal.png" alt="نافذة تسجيل الدخول اليومي" width="260" style="border-radius: 14px;" />
+  <p><i>نافذة تسجيل الدخول اليومي</i></p>
 </div>
 
 ---
 
-## 🚀 اختبارات الأداء والضغط المتزامن (Concurrency & Load Testing)
+## 🚀 اختبارات الأداء والضغط المتزامن (Concurrency & Load Testing) <a id="performance"></a>
 
 تم إخضاع البنية التحتية لتطبيق UniFocus ومحرك المزامنة الحية لاختبارات أداء وضغط دقيقة لمحاكاة بيئات الاستخدام الكثيف:
 
@@ -174,19 +186,19 @@ $$\text{المعدل التراكمي} = \frac{(\text{baselineGpa} \times \text{
 
 <p align="center">
   <a href="https://github.com/MoAb-01/unifocus/issues/new?template=bug_report.md">
-    <img src="https://img.shields.io/badge/الإبلاغ_عن_خطأ-فتح_تذكرة-E53935?style=for-the-badge&logo=github&logoColor=white" alt="الإبلاغ عن خطأ" />
+    <img src="https://img.shields.io/badge/Report%20Bug-Open%20Issue-E53935?style=for-the-badge&logo=github&logoColor=white" alt="الإبلاغ عن خطأ" />
   </a>
   &nbsp;
   <a href="https://github.com/MoAb-01/unifocus/issues/new?template=feature_request.md">
-    <img src="https://img.shields.io/badge/اقتراح_ميزة-فكرة_جديدة-43A047?style=for-the-badge&logo=github&logoColor=white" alt="اقتراح ميزة" />
+    <img src="https://img.shields.io/badge/Suggest%20Feature-New%20Proposal-43A047?style=for-the-badge&logo=github&logoColor=white" alt="اقتراح ميزة" />
   </a>
   &nbsp;
   <a href="https://github.com/MoAb-01/unifocus/discussions">
-    <img src="https://img.shields.io/badge/المجتمع-نقاشات-0288D1?style=for-the-badge&logo=github&logoColor=white" alt="نقاشات" />
+    <img src="https://img.shields.io/badge/Community-Discussions-0288D1?style=for-the-badge&logo=github&logoColor=white" alt="نقاشات" />
   </a>
   &nbsp;
   <a href="mailto:mohamedgabdoucontact@gmail.com">
-    <img src="https://img.shields.io/badge/تواصل_مباشر-البريد_الإلكتروني-FF8F00?style=for-the-badge&logo=gmail&logoColor=white" alt="تواصل" />
+    <img src="https://img.shields.io/badge/Direct%20Contact-Email-FF8F00?style=for-the-badge&logo=gmail&logoColor=white" alt="تواصل مباشر" />
   </a>
 </p>
 
