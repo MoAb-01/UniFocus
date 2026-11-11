@@ -3,31 +3,39 @@
   <img src="assets/images/unifocus_logo_white.png" alt="UniFocus Logo" width="180" style="border-radius: 14px;" />
 
   # UniFocus
-  **Akademik ve Sosyal Yaşam Uygulaması**
+  **Academic & Social Productivity Platform**
 
   <p>
-    <a href="LICENSE"><img src="https://img.shields.io/badge/lisans-MIT-blue.svg?style=flat-square" alt="Lisans" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License" /></a>
     <a href="https://flutter.dev"><img src="https://img.shields.io/badge/framework-Flutter-02569B?style=flat-square&logo=flutter&logoColor=white" alt="Flutter" /></a>
-    <a href="https://dart.dev"><img src="https://img.shields.io/badge/dil-Dart-0175C2?style=flat-square&logo=dart&logoColor=white" alt="Dart" /></a>
-    <img src="https://img.shields.io/badge/platform-Android%20%C2%B7%20iOS-4CAF50?style=flat-square" alt="Platformlar" />
+    <a href="https://dart.dev"><img src="https://img.shields.io/badge/language-Dart-0175C2?style=flat-square&logo=dart&logoColor=white" alt="Dart" /></a>
+    <img src="https://img.shields.io/badge/platforms-Android%20%C2%B7%20iOS-4CAF50?style=flat-square" alt="Platforms" />
     <a href="https://firebase.google.com"><img src="https://img.shields.io/badge/backend-Google%20Firebase-FFCA28?style=flat-square&logo=firebase&logoColor=black" alt="Firebase" /></a>
-    <a href="https://livekit.io"><img src="https://img.shields.io/badge/ses-LiveKit%20WebRTC-000000?style=flat-square&logo=webrtc&logoColor=white" alt="LiveKit WebRTC" /></a>
+    <a href="https://livekit.io"><img src="https://img.shields.io/badge/voice-LiveKit%20WebRTC-000000?style=flat-square&logo=webrtc&logoColor=white" alt="LiveKit WebRTC" /></a>
+  </p>
+
+  <p>
+    <a href="https://github.com/MoAb-01/unifocus/releases/latest">
+      <img src="https://img.shields.io/badge/Download_Latest_APK-v1.0.0_Beta-2ea44f?style=for-the-badge&logo=android&logoColor=white" alt="Download Android APK" />
+    </a>
   </p>
 
   <p align="center">
-    <b>Türkçe</b> • <a href="README_EN.md">English</a> • <a href="README_AR.md">العربية</a>
+    <a href="README.md">Türkçe</a> • <b>English</b> • <a href="README_AR.md">العربية</a>
   </p>
 
   <p>
-    <a href="#-kullanıcı-gözünden-unifocus">Kullanıcı Gözüyle</a> •
-    <a href="#️-kullanılan-teknolojiler">Teknolojiler</a> •
-    <a href="#-25d-izometrik-çalışma-alanı-mimarisi">2.5D Çalışma Odası</a> •
-    <a href="#-akademik-motor--gano-hesaplama">Akademik Motor</a> •
-    <a href="#-oyunlaştırma-ve-mola-mini-oyunları">Oyunlaştırma & Oyunlar</a> •
-    <a href="#-performans-yük-ve-eşzamanlılık-testleri">Performans & Yük Testleri</a>
+    <a href="#-user-perspective">User Perspective</a> •
+    <a href="#️-technology-stack">Tech Stack</a> •
+    <a href="#-25d-isometric-workspace-architecture">2.5D Room Engine</a> •
+    <a href="#-academic-engine--gpa-matrix">Academic Engine</a> •
+    <a href="#-gamification--break-mini-games">Gamification</a> •
+    <a href="#-performance-load--concurrency-testing">Performance & Tests</a>
   </p>
 
 </div>
+
+---
 
 ---
 
