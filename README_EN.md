@@ -13,6 +13,11 @@
     <a href="https://firebase.google.com"><img src="https://img.shields.io/badge/backend-Google%20Firebase-FFCA28?style=flat-square&logo=firebase&logoColor=black" alt="Firebase" /></a>
     <a href="https://livekit.io"><img src="https://img.shields.io/badge/voice-LiveKit%20WebRTC-000000?style=flat-square&logo=webrtc&logoColor=white" alt="LiveKit WebRTC" /></a>
   </p>
+    <p>
+    <a href="https://github.com/MoAb-01/unifocus/releases/latest">
+      <img src="https://img.shields.io/badge/Download_Latest_APK-v1.0.0_Beta-2ea44f?style=for-the-badge&logo=android&logoColor=white" alt="Download Android APK" />
+    </a>
+  </p>
 
   <p align="center">
     <a href="README.md">Türkçe</a> • <b>English</b> • <a href="README_AR.md">العربية</a>
