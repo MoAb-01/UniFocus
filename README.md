@@ -21,7 +21,7 @@
   </p>
 
   <p align="center">
-    <a href="README.md">Türkçe</a> • <b>English</b> • <a href="README_AR.md">العربية</a>
+    <b>Türkçe</b> • <a href="README_EN.md">English</a> • <a href="README_AR.md">العربية</a>
   </p>
 
   <p>
