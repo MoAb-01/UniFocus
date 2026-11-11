@@ -50,6 +50,11 @@ UniFocus; ders takibini, günlük görev yönetimini ve gerçek zamanlı çok oy
 - **Öncelikli Görev Yönetimi:** Ödev, proje ve sınav hazırlıklarınızı önem derecesine göre düzenleyin.
 - **Günlük Seri (Streak) Takibi:** Her gün düzenli çalışarak serinizi koruyun ve çalışma disiplininizi artırın.
 
+<div align="center">
+  <img src="assets/screenshots/Focus_Timer.png" alt="Odaklanma Sayacı" width="260" style="border-radius: 14px;" />
+  <p><i>Ana Sayfa Paneli.</i></p>
+</div>
+
 ### 4. Birlikte Çalışma: Arkadaşlarınızla 2.5D Sanal Çalışma Odası
 - **Canlı Çalışma Odaları:** 9 haneli oda kodları (`XXX-XXX-XXX`) ile arkadaşlarınızı toplayıp paylaşımlı 2.5D sanal çalışma odasında bir araya gelin.
 - **Görsel Çalışma Durumu:** Hangi derse çalıştığınızı veya kısa mola durumunuzu anlık yansıtın; avatarınız durumunuza göre masada otursun veya ayağa kalkıp kapıya yürüsün.
@@ -59,8 +64,9 @@ UniFocus; ders takibini, günlük görev yönetimini ve gerçek zamanlı çok oy
 - **Göz Dinlendirme ve Mola Görevleri:** Su içmek veya ekran yorgunluğuna karşı gözleri dinlendirmek gibi fiziksel alışkanlıkları tamamlayarak ekstra XP kazanın.
 
 <div align="center">
-  <img src="assets/screenshots/arena_controls.png" alt="Oda Kontrolleri" width="260" style="border-radius: 14px;" />
-  <p><i>Canlı oda seçenekleri, anlık durum güncellemesi ve bekleme modlu sesli kanal.</i></p>
+  <img src="assets/screenshots/Together_Lobby.png" alt="Oda Katılım Lobisi" width="250" style="border-radius: 14px; margin-right: 12px;" />
+  <img src="assets/screenshots/arena_controls.png" alt="Oda Kontrolleri" width="250" style="border-radius: 14px;" />
+  <p><i>Sol: Oda kodları ile katılım lobisi. Sağ: Canlı oda kontrolleri.</i></p>
 </div>
 
 ---
@@ -96,7 +102,7 @@ $$\text{screenY} = \text{originY} + (x + y) \times \frac{\text{tileHeight}}{2} -
 
 <div align="center">
   <img src="assets/screenshots/room_active.png" alt="2.5D Çalışma Odası" width="260" style="border-radius: 14px;" />
-  <p><i>Dinamik derinlik sıralaması ve canlı odaklanma sayaçlarına sahip saf Canvas vektör odası.</i></p>
+  <p><i>Oda Arayüzü Tasarımı.</i></p>
 </div>
 
 ---
@@ -111,7 +117,7 @@ $$\text{Kümülatif GANO} = \frac{(\text{baselineGpa} \times \text{baselineAkts}
 
 <div align="center">
   <img src="assets/screenshots/academic_profile.png" alt="Akademik Profil" width="260" style="border-radius: 14px;" />
-  <p><i>Ana Dal, Çift Anadal (ÇAP) ve Yandal programlarını bir arada destekleyen akademik takip paneli.</i></p>
+  <p><i>Profil Paneli.</i></p>
 </div>
 
 ---
@@ -139,7 +145,7 @@ Kazanılan XP puanları, istemci taraflı hileleri önlemek için benzersiz işl
 
 <div align="center">
   <img src="assets/screenshots/streak_modal.png" alt="Günlük Seri ve XP" width="260" style="border-radius: 14px;" />
-  <p><i>Günlük girişleri, seri devamlılığını ve XP çarpanlarını takip eden check-in penceresi.</i></p>
+  <p><i>Günlük Giriş Penceresi.</i></p>
 </div>
 
 ---
@@ -160,7 +166,7 @@ Render üzerinde barındırılan LiveKit JWT imzalama servisi (`POST /getLiveKit
 | **Gecikme $p(99)$** | $< 1000\text{ ms}$ | **$480,29\text{ ms}$** | Başarılı |
 | **Medyan Gecikme ($p50$)** | Temel Seviye | **$230,83\text{ ms}$** | Sağlıklı |
 
-> **Analiz:** 250 eşzamanlı sanal öğrencinin 15 farklı odaya aynı anda katılarak jeton talep ettiği tepe yük altında, Node.js olay döngüsü (event loop) HMAC SHA-256 kriptografik imzalama işlemlerinde kilitlenmemiş, sıfır soket kaybı ve %100 başarı oranı elde edilmiştir.
+> **Analiz:** Tepe yük altında Node.js olay döngüsünde hiçbir tıkanma yaşanmamış; bağlantı kopması olmadan 300 ms altı yanıt süreleri korunmuştur.
 
 ### 2. Firestore Eşzamanlılık ve Durum Doğrulama (`Flutter Integration Tests`)
 Oda senkronizasyonu ve durum makineleri, yerel Dart entegrasyon test paketleriyle doğrulanmıştır:
@@ -185,7 +191,7 @@ Oda senkronizasyonu ve durum makineleri, yerel Dart entegrasyon test paketleriyl
     <img src="https://img.shields.io/badge/Topluluk-Tartışmalar-0288D1?style=for-the-badge&logo=github&logoColor=white" alt="Tartışmalar" />
   </a>
   &nbsp;
-  <a href="mailto:mohamedgabdoucontact@gmail.com">
+  <a href="mailto:mohamedgaboucontact@gmail.com">
     <img src="https://img.shields.io/badge/Doğrudan%20İletişim-E--posta-FF8F00?style=for-the-badge&logo=gmail&logoColor=white" alt="İletişim" />
   </a>
 </p>
