@@ -50,6 +50,11 @@ UniFocus integrates curriculum tracking, daily task organization, and real-time 
 - **Prioritized Task Backlog:** Organize assignments, laboratory prep, and exams by strict priority weighting.
 - **Daily Streak Tracking:** Reinforce disciplined daily study routines with streak preservation incentives.
 
+<div align="center">
+  <img src="assets/screenshots/Focus_Timer.png" alt="Home Dashboard & Focus Hub" width="260" style="border-radius: 14px;" />
+  <p><i>Home Dashboard</i></p>
+</div>
+
 ### 4. Co-Working: 2.5D Virtual Study Rooms
 - **Real-Time Collaboration Spaces:** Assemble study groups via 9-character room codes (`XXX-XXX-XXX`) inside a shared 2.5D virtual space.
 - **Visual Status Reflection:** Avatars sit at workstations during active study or dynamically walk toward the doorway during short breaks.
@@ -59,8 +64,9 @@ UniFocus integrates curriculum tracking, daily task organization, and real-time 
 - **Wellness Habits:** Gain bonus XP by confirming physical wellness tasks like hydration and screen-fatigue eye relief.
 
 <div align="center">
-  <img src="assets/screenshots/arena_controls.png" alt="Room Controls" width="260" style="border-radius: 14px;" />
-  <p><i>Live study arena controls with real-time status transitions and standby voice channels.</i></p>
+  <img src="assets/screenshots/Together_Lobby.png" alt="Lobby" width="250" style="border-radius: 14px; margin-right: 12px;" />
+  <img src="assets/screenshots/arena_controls.png" alt="Room Controls" width="250" style="border-radius: 14px;" />
+  <p><i>Left: Lobby    Right: Room Controls</i></p>
 </div>
 
 ---
@@ -95,8 +101,8 @@ $$\text{screenY} = \text{originY} + (x + y) \times \frac{\text{tileHeight}}{2} -
 - **Procedural Kinematics:** Procedural sine-wave walking kinematics replace sprite loops, paired with subtle resting breathing oscillations ($\pm 1.4\text{px}$).
 
 <div align="center">
-  <img src="assets/screenshots/room_active.png" alt="Active Room" width="260" style="border-radius: 14px;" />
-  <p><i>Pure Canvas vector room with dynamic depth sorting and real-time synchronized focus counters.</i></p>
+  <img src="assets/screenshots/room_active.png" alt="Room UI Design" width="260" style="border-radius: 14px;" />
+  <p><i>Room UI Design</i></p>
 </div>
 
 ---
@@ -110,8 +116,8 @@ $$\text{Cumulative GPA} = \frac{(\text{baselineGpa} \times \text{baselineAkts}) 
 *For preparatory class students or unpublished grades, `baselineGpa` evaluates to `null`, rendering **`NOT RECORDED`** rather than a deceptive `0.00`.*
 
 <div align="center">
-  <img src="assets/screenshots/academic_profile.png" alt="Academic Profile" width="260" style="border-radius: 14px;" />
-  <p><i>Consolidated academic profile dashboard supporting Major, Double Major, and Minor programs.</i></p>
+  <img src="assets/screenshots/academic_profile.png" alt="Academic Tracker" width="260" style="border-radius: 14px;" />
+  <p><i>Profile Tab</i></p>
 </div>
 
 ---
@@ -138,8 +144,8 @@ XP gains are written to cloud storage via unique client transaction keys (`idemp
 4. **Memory Match:** Short-term visual pattern and sequence recall.
 
 <div align="center">
-  <img src="assets/screenshots/streak_modal.png" alt="Streak Modal" width="260" style="border-radius: 14px;" />
-  <p><i>Daily streak modal tracking attendance milestones, multipliers, and reward progression.</i></p>
+  <img src="assets/screenshots/streak_modal.png" alt="Daily Check-in Window" width="260" style="border-radius: 14px;" />
+  <p><i>Daily Check-in Window</i></p>
 </div>
 
 ---
@@ -149,7 +155,7 @@ XP gains are written to cloud storage via unique client transaction keys (`idemp
 UniFocus's backend microservices, real-time Firestore synchronization, and 2.5D rendering pipeline have been verified under simulated multi-peer concurrency:
 
 ### 1. Token Server Load Testing (`k6`)
-The LiveKit JWT token-signing microservice on Render (`POST /getLiveKitToken`) was benchmarked using **k6** tool through a 4-stage ramping profile reaching **250 concurrent Virtual Users (VUs)** across 15 simulated active rooms:
+The LiveKit JWT token-signing microservice on Render (`POST /getLiveKitToken`) was benchmarked using **k6** through a 4-stage ramping profile reaching **250 concurrent Virtual Users (VUs)** across 15 simulated active rooms:
 
 | Metric | Target Threshold | Measured Result | Status |
 | :--- | :---: | :---: | :---: |
