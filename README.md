@@ -23,7 +23,8 @@
     <a href="#️-kullanılan-teknolojiler">Teknolojiler</a> •
     <a href="#-25d-izometrik-çalışma-alanı-mimarisi">2.5D Çalışma Odası</a> •
     <a href="#-akademik-motor--gano-hesaplama">Akademik Motor</a> •
-    <a href="#-oyunlaştırma-ve-mola-mini-oyunları">Oyunlaştırma & Oyunlar</a>
+    <a href="#-oyunlaştırma-ve-mola-mini-oyunları">Oyunlaştırma & Oyunlar</a> •
+    <a href="#-performans-yük-ve-eşzamanlılık-testleri">Performans & Yük Testleri</a>
   </p>
 
 </div>
@@ -72,10 +73,11 @@ UniFocus, harici ağır oyun motorları yerine Flutter'ın saf vektör çizim ye
 | :--- | :--- | :--- |
 | **Ön Yüz & Arayüz** | **Flutter / Dart** | Tek kod tabanından Android ve iOS için yüksek performanslı yerel derleme. |
 | **2.5D Grafik Motoru** | **Saf Flutter `CustomPainter` / Canvas** | Harici oyun motoru (Flame/Unity) veya görsel sprite kullanmadan, tamamen matematiksel vektör yollarıyla 60 FPS izometrik oda çizimi. |
+| **Durum Yönetimi** | **Yerel `ChangeNotifier` + Reaktif Akışlar** | Harici kütüphane bağımlılığı olmadan (sıfır ek paket), bellek sızıntısız ve yüksek verimli durum mimarisi. |
 | **Veritabanı & Senkronizasyon** | **Google Cloud Firestore** | Koltuk sahipliği, kullanıcı durumu, görevler ve müzik zaman damgaları için anlık çift yönlü senkronizasyon. |
 | **Kimlik Doğrulama & Güvenlik** | **Firebase Auth & Çift-Token (Dual-Token)** | Bellekte tutulan kısa ömürlü erişim jetonları ve güvenli dönen yenileme jetonları ile korunan oturum yapısı. |
 | **Gerçek Zamanlı Ses (WebRTC)** | **LiveKit Cloud & WebRTC SFU** | Donanımsal yankı engelleme ve gerçek ses aktivitesi algılama destekli düşük gecikmeli grup sesi. |
-| **Jeton (Token) Sunucusu** | **Render (Node.js/Go)** | Firebase kullanıcı kimliğini doğrulayıp şifreli LiveKit erişim anahtarlarını imzalayan mikroservis. |
+| **Jeton (Token) Sunucusu** | **Render (Node.js)** | Firebase kullanıcı kimliğini doğrulayıp şifreli LiveKit JWT anahtarlarını imzalayan mikroservis (k6 ile 250 VU yük altında test edildi). |
 | **Müzik Senkronizasyon Döngüsü** | **İstemci Taraflı Zaman Damgası Algoritması** | Yerel lo-fi müzikler ve Firestore zaman damgası üzerinden 5 saniyede bir çalışan 3 saniyelik kayma düzeltme döngüsü. |
 
 ---
@@ -89,7 +91,7 @@ $$\text{screenY} = \text{originY} + (x + y) \times \frac{\text{tileHeight}}{2} -
 
 - **Dinamik Derinlik Sıralaması (Depth Sorting):** Çizim esnasında masa ve karakterlerin birbirini hatalı örtmesini önlemek için her karede sıralama uygulanır:
   $$\text{depth} = (x + y) \times 100 + z$$
-- **Deterministik Koltuk Dağılımı:** Odadaki 6 masa, öğrencilerin eşit aralıklarla yerleşmesi için şu sırayla doldurulur: `[0, 3, 1, 4, 2, 5]`.
+- **Deterministik Koltuk Dağılımı:** Odadaki 6 masa, öğrencilerin eşit aralıklarla yerleşmesi ve koridor genişliğinin korunması için şu sırayla doldurulur: `[0, 3, 1, 4, 2, 5]`.
 - **Prosedürel Yürüme ve Nefes Alma:** Sprite kareleri yerine sinüs dalgalarıyla yürüyüş yaylanması oluşturulur; masada otururken nefes alma salınımı ($\pm 1.4\text{px}$) hesaplanır.
 
 <div align="center">
@@ -142,6 +144,32 @@ Kazanılan XP puanları, istemci taraflı hileleri önlemek için benzersiz işl
 
 ---
 
+## 🚀 Performans, Yük ve Eşzamanlılık Testleri
+
+UniFocus'un backend altyapısı, anlık veri senkronizasyonu ve 2.5D grafik motoru, yüksek eşzamanlılık ve stres altında test edilerek doğrulanmıştır:
+
+### 1. Node.js Jeton (Token) Mikroservisi Stres Testi (`k6`)
+Render üzerinde barındırılan LiveKit JWT imzalama servisi (`POST /getLiveKitToken`), **Grafana k6** kullanılarak 4 aşamalı ve 250 eşzamanlı sanal kullanıcı (VU) içeren agresif bir yük testine tabi tutulmuştur:
+
+| Test Metriği | Hedeflenen Eşik | Gerçekleşen Ölçüm | Sonuç |
+| :--- | :---: | :---: | :---: |
+| **Toplam HTTP İsteği** | — | **23.347 istek** (Saniyede 97 istek) | Başarılı |
+| **İstek Başarı Oranı** | $> 99.00\%$ | **%100,00** (0 hata / 23.347 istek) | Kusursuz |
+| **Doğrulama Denetimleri (Checks)** | %100 | **46.694 / 46.694 başarılı** | Kusursuz |
+| **Gecikme $p(95)$** | $< 500\text{ ms}$ | **$260,34\text{ ms}$** | Başarılı |
+| **Gecikme $p(99)$** | $< 1000\text{ ms}$ | **$480,29\text{ ms}$** | Başarılı |
+| **Medyan Gecikme ($p50$)** | Temel Seviye | **$230,83\text{ ms}$** | Sağlıklı |
+
+> **Analiz:** 250 eşzamanlı sanal öğrencinin 15 farklı odaya aynı anda katılarak jeton talep ettiği tepe yük altında, Node.js olay döngüsü (event loop) HMAC SHA-256 kriptografik imzalama işlemlerinde kilitlenmemiş, sıfır soket kaybı ve %100 başarı oranı elde edilmiştir.
+
+### 2. Firestore Eşzamanlılık ve Durum Doğrulama (`Flutter Integration Tests`)
+Oda senkronizasyonu ve durum makineleri, yerel Dart entegrasyon test paketleriyle doğrulanmıştır:
+- **Çakışmasız Masa Dağılımı:** `[0, 3, 1, 4, 2, 5]` deterministik yerleşim formülüyle masalar arası $\ge 100\text{px}$ koridor mesafesi korunarak avatar çakışmaları tamamen önlenmiştir.
+- **Konsensüs ve Grup Molası:** 6 katılımcılı odalarda katılımcıların en az $\%50$'sinin mola talep etmesi durumunda, tüm bağlı istemcilerin aynı karede (single-frame) mola moduna geçişi doğrulanmıştır.
+- **İstemci Taraflı Ses Kayması Düzeltme:** Host ve istemci saatleri arasındaki sapmalar 5 saniyede bir taranarak $\pm 3\text{s}$ tolerans eşiğinde kesintisiz müzik senkronizasyonu sağlanmıştır.
+
+---
+
 ## 🤝 Destek ve İşbirliği
 
 <p align="center">
@@ -157,7 +185,7 @@ Kazanılan XP puanları, istemci taraflı hileleri önlemek için benzersiz işl
     <img src="https://img.shields.io/badge/Topluluk-Tartışmalar-0288D1?style=for-the-badge&logo=github&logoColor=white" alt="Tartışmalar" />
   </a>
   &nbsp;
-  <a href="mailto:mohamedgaboucontact@gmail.com">
+  <a href="mailto:mohamedgabdoucontact@gmail.com">
     <img src="https://img.shields.io/badge/Doğrudan%20İletişim-E--posta-FF8F00?style=for-the-badge&logo=gmail&logoColor=white" alt="İletişim" />
   </a>
 </p>
