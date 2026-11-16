@@ -24,15 +24,14 @@
     <b>Türkçe</b> • <a href="README_EN.md">English</a> • <a href="README_AR.md">العربية</a>
   </p>
 
-  <p>
-    <a href="#-user-perspective">User Perspective</a> •
-    <a href="#️-technology-stack">Tech Stack</a> •
-    <a href="#-25d-isometric-workspace-architecture">2.5D Room Engine</a> •
-    <a href="#-academic-engine--gpa-matrix">Academic Engine</a> •
-    <a href="#-gamification--break-mini-games">Gamification</a> •
-    <a href="#-performance-load--concurrency-testing">Performance & Tests</a>
+ <p>
+    <a href="#-kullanıcı-gözünden-unifocus">Kullanıcı Gözünden</a> •
+    <a href="#️-kullanılan-teknolojiler">Teknolojiler</a> •
+    <a href="#-25d-i̇zometrik-çalışma-alanı-mimarisi">2.5D Oda Motoru</a> •
+    <a href="#-akademik-motor--gano-hesaplama">Akademik Motor</a> •
+    <a href="#-oyunlaştırma-ve-mola-mini-oyunları">Oyunlaştırma</a> •
+    <a href="#-performans-yük-ve-eşzamanlılık-testleri">Performans & Testler</a>
   </p>
-
 </div>
 
 ---
