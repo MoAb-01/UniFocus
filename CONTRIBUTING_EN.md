@@ -4,21 +4,12 @@
   <a href="CONTRIBUTING.md">Türkçe</a> • <b>English</b> • <a href="CONTRIBUTING_AR.md">العربية</a>
 </p>
 
-This Project is brought to you by:
+## 👥 Core Team & Maintainers
 
 <a href="https://github.com/MoAb-01/unifocus/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=MoAb-01/unifocus" />
 </a>
 
-
-## 👥 Core Team & Maintainers
-
-- **Mohamed Abdou** ([@MoAb-01](https://github.com/MoAb-01))
-  - **Role:** Backend Developer and Design
-  - **Focus:** Flutter 2.5D Vector Canvas Engine · State Sync · LiveKit WebRTC SFU
-- **Özgür Umut Pirinççi** ([@ID](https://github.com/))
-  - **Role:** Quality Assurance & Testing
-  - **Focus:** Testing · State Sync · LiveKit WebRTC SFU
 
 ---
 
