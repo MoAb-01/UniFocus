@@ -7,12 +7,9 @@ Bu proje sizlere gururla sunulur:
 ---
 
 ## 👥 Çekirdek Ekip
-- **Mohamed Abdou** ([@MoAb-01](https://github.com/MoAb-01))
-  - **Rol:** Backend Geliştirici & Tasarım
-  - **Odak Alanı:** Flutter 2.5D Vektör Çizim Motoru · Durum Senkronizasyonu · LiveKit WebRTC SFU
-- **Özgür Umut Pirinççi** ([@ID](https://github.com/))
-  - **Rol:** Kalite Güvence & Test
-  - **Odak Alanı:** Test · Durum Senkronizasyonu · LiveKit WebRTC SFU
+<a href="https://github.com/MoAb-01/unifocus/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=MoAb-01/unifocus" />
+</a>
 
 ---
 
