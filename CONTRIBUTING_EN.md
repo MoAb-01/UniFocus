@@ -5,6 +5,7 @@
 </p>
 
 This Project is brought to you by:
+
 <a href="https://github.com/MoAb-01/unifocus/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=MoAb-01/unifocus" />
 </a>
