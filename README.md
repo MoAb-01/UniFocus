@@ -1,7 +1,7 @@
 <div align="center">
 
   <img src="assets/images/unifocus_logo_white.png" alt="UniFocus Logo" width="180" style="border-radius: 14px;" />
-
+  
   # UniFocus
   **Academic & Social Productivity Platform**
 
