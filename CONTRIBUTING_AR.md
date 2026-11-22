@@ -12,14 +12,10 @@
 
 ## 👥 الفريق الأساسي والمشرفون
 
-- **محمد عبده** ([@MoAb-01](https://github.com/MoAb-01))
-  - **الدور:** مطور الواجهة الخلفية والتصميم
-  - **مجال التركيز:** محرك الرسم المتجهي 2.5D في Flutter · مزامنة الحالة · LiveKit WebRTC SFU
-- **أوزغور أوموت بيرينتشي** ([@ID](https://github.com/))
-  - **الدور:** ضمان الجودة والاختبارات البرمجية
-  - **مجال التركيز:** الاختبارات البرمجية · مزامنة الحالة · LiveKit WebRTC SFU
+<a href="https://github.com/MoAb-01/unifocus/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=MoAb-01/unifocus" />
+</a>
 
----
 
 ## 🌟 لماذا تساهم في UniFocus؟
 
